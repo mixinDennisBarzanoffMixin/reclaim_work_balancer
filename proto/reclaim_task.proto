@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package task;
+
+message Task {
+  int32 id = 1;
+  string title = 2;
+  string notes = 3;
+  string eventCategory = 4;
+  string eventSubType = 5;
+  string status = 6;
+  int32 timeChunksRequired = 7;
+  int32 timeChunksSpent = 8;
+  int32 timeChunksRemaining = 9;
+  int32 minChunkSize = 10;
+  int32 maxChunkSize = 11;
+  bool alwaysPrivate = 12;
+  bool deleted = 13;
+  float index = 14;
+  string due = 15;
+  string created = 16;
+  string updated = 17;
+  string snoozeUntil = 18;
+  bool adjusted = 19;
+  bool atRisk = 20;
+  string type = 21;
+  string recurringAssignmentType = 22;
+}
+
+
+
