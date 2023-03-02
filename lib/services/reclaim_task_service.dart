@@ -27,7 +27,9 @@ class ReclaimTaskService {
     }
     final List<dynamic> data = jsonDecode(response.body);
     return data.map((data) {
-      final task = Task()..mergeFromProto3Json(data);
+      final task = Task()
+        ..mergeFromProto3Json(data)
+        ..freeze();
       return task;
     }).toList();
   }
@@ -44,7 +46,7 @@ class ReclaimTaskService {
       'Authorization': 'Bearer c59e0b11-9cc8-4e03-bb50-ba55d0e71fd1'
     };
 
-    final body = jsonEncode(task.writeToJsonMap());
+    final body = jsonEncode(task.toProto3Json());
 
     final response = await client.put(url, headers: headers, body: body);
 
@@ -68,7 +70,7 @@ class ReclaimTaskService {
     final response = await client.post(
       url,
       headers: headers,
-      body: jsonEncode(task.writeToJson()),
+      body: jsonEncode(task.toProto3Json()),
     );
 
     if (response.statusCode != 200) {
@@ -76,7 +78,9 @@ class ReclaimTaskService {
     }
 
     final data = jsonDecode(response.body);
-    final newTask = Task()..mergeFromProto3Json(data);
+    final newTask = Task()
+      ..mergeFromProto3Json(data)
+      ..freeze();
     return newTask;
   }
 }

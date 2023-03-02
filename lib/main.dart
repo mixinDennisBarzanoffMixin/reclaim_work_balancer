@@ -60,6 +60,7 @@ class _MyAppState extends State<MyApp> {
           onPressed: tasks.isEmpty
               ? null
               : () async {
+                  tasks = await service.fetchAllTasks();
                   // iterate over the list of pouches
                   // for each pouch, iterate over the tasks
                   // for each task, check if it has an id
