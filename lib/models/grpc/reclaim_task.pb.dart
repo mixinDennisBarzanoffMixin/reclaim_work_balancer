@@ -33,6 +33,7 @@ class Task extends $pb.GeneratedMessage {
     ..aOB(20, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'atRisk', protoName: 'atRisk')
     ..aOS(21, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'type')
     ..aOS(22, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'recurringAssignmentType', protoName: 'recurringAssignmentType')
+    ..aOS(23, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'eventColor', protoName: 'eventColor')
     ..hasRequiredFields = false
   ;
 
@@ -60,6 +61,7 @@ class Task extends $pb.GeneratedMessage {
     $core.bool? atRisk,
     $core.String? type,
     $core.String? recurringAssignmentType,
+    $core.String? eventColor,
   }) {
     final _result = create();
     if (id != null) {
@@ -127,6 +129,9 @@ class Task extends $pb.GeneratedMessage {
     }
     if (recurringAssignmentType != null) {
       _result.recurringAssignmentType = recurringAssignmentType;
+    }
+    if (eventColor != null) {
+      _result.eventColor = eventColor;
     }
     return _result;
   }
@@ -348,5 +353,14 @@ class Task extends $pb.GeneratedMessage {
   $core.bool hasRecurringAssignmentType() => $_has(21);
   @$pb.TagNumber(22)
   void clearRecurringAssignmentType() => clearField(22);
+
+  @$pb.TagNumber(23)
+  $core.String get eventColor => $_getSZ(22);
+  @$pb.TagNumber(23)
+  set eventColor($core.String v) { $_setString(22, v); }
+  @$pb.TagNumber(23)
+  $core.bool hasEventColor() => $_has(22);
+  @$pb.TagNumber(23)
+  void clearEventColor() => clearField(23);
 }
 

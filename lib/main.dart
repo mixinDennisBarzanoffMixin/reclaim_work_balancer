@@ -4,7 +4,18 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
+import 'models/grpc/reclaim_task.pb.dart';
+
 void main() {
+  String jsonString = '{"id": 2382282, "title": "SMBM-1788"}';
+
+  Map<String, dynamic> jsonMap = json.decode(jsonString);
+
+  final task = Task()..mergeFromProto3Json(jsonMap);
+  // Task task = Task.fromJson(jsonString).toProto3Json();
+  
+  print(task.id); // prints 2382282
+  print(task.title); // prints SMBM-1788
   runApp(const MyApp());
 }
 
@@ -24,7 +35,7 @@ class _MyAppState extends State<MyApp> {
     final url = Uri.https(
       'api.app.reclaim.ai',
       '/api/tasks',
-      {'status': 'NEW,SCHEDULED,IN_PROGRESS,COMPLETE', 'instances': 'true'},
+      {'status': 'NEW,SCHEDULED,IN_PROGRESS,COMPLETE'},
     );
 
     final headers = {
@@ -58,10 +69,11 @@ class _MyAppState extends State<MyApp> {
                 itemCount: data.length,
                 itemBuilder: ((context, index) {
                   final object = data[index];
+                  final task = Task()..mergeFromProto3Json(object);
                   return SizedBox(
                     width: double.infinity,
                     child: Text(
-                      object['title'] + " " + (object['timeChunksRemaining'] / 4).toString() + "h",
+                      "${task.title} ${task.timeChunksRemaining / 4}h",
                       style: Theme.of(context).textTheme.headline4,
                     ),
                   );

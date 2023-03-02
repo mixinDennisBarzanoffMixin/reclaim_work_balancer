@@ -8,6 +8,7 @@ message Task {
   string notes = 3;
   string eventCategory = 4;
   string eventSubType = 5;
+  string eventColor = 23;
   string status = 6;
   int32 timeChunksRequired = 7;
   int32 timeChunksSpent = 8;
@@ -26,6 +27,3 @@ message Task {
   string type = 21;
   string recurringAssignmentType = 22;
 }
-
-
-
