@@ -169,6 +169,57 @@ void main() {
       expect(splitTasks.length, 1);
     });
 
+    test('Test updating work tasks and creating new ones', () {
+      final workTask1 = Task()
+        ..id = 123
+        ..title = 'Example Work Task 1'
+        ..notes = 'This is an example work task'
+        ..status = TaskStatus.NEW
+        ..due = Timestamp.fromDateTime(DateTime(2023, 11, 12))
+        ..eventCategory = EventCategory.WORK
+        ..timeChunksRequired = 4 * 10
+        ..freeze();
+
+      final workTask2 = Task()
+        ..id = 124
+        ..title = 'Example Work Task 2'
+        ..notes = 'This is another example work task'
+        ..status = TaskStatus.NEW
+        ..due = Timestamp.fromDateTime(DateTime(2023, 11, 14))
+        ..eventCategory = EventCategory.WORK
+        ..timeChunksRequired = 4 * 2
+        ..freeze();
+
+      final tasks = [workTask1, workTask2];
+      final splitTasks = budgeter.splitByBudgets(tasks);
+
+      expect(splitTasks[0], orderedEquals([
+          workTask1.rebuild((task) {
+            task.timeChunksRequired = 4 * 4;
+            task.snoozeUntil = Timestamp.fromDateTime(DateTime(2023, 11, 12, 6));
+            task.due = Timestamp.fromDateTime(DateTime(2023, 11, 12, 22));
+          }),
+          workTask1.rebuild((task) {
+            task.clearId();
+            task.timeChunksRequired = 4 * 4;
+            task.due = Timestamp.fromDateTime(DateTime(2023, 11, 13, 22));
+            task.snoozeUntil = Timestamp.fromDateTime(DateTime(2023, 11, 13, 6));
+          }),
+          workTask1.rebuild((task) {
+            task.clearId();
+            task.timeChunksRequired = 4 * 2;
+            task.due = Timestamp.fromDateTime(DateTime(2023, 11, 14, 22));
+            task.snoozeUntil = Timestamp.fromDateTime(DateTime(2023, 11, 14, 6));
+          }),
+          workTask2.rebuild((task) {
+            task.timeChunksRequired = 4 * 2;
+            task.due = Timestamp.fromDateTime(DateTime(2023, 11, 14, 22));
+            task.snoozeUntil = Timestamp.fromDateTime(DateTime(2023, 11, 14, 6));
+          }),
+        ]));
+        expect(splitTasks.length, 1);
+    });
+
   });
 
 }
