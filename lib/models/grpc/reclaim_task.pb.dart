@@ -9,14 +9,20 @@ import 'dart:core' as $core;
 
 import 'package:protobuf/protobuf.dart' as $pb;
 
+import 'google/protobuf/timestamp.pb.dart' as $0;
+
+import 'reclaim_task.pbenum.dart';
+
+export 'reclaim_task.pbenum.dart';
+
 class Task extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'Task', package: const $pb.PackageName(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'task'), createEmptyInstance: create)
     ..a<$core.int>(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'id', $pb.PbFieldType.O3)
     ..aOS(2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'title')
     ..aOS(3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'notes')
-    ..aOS(4, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'eventCategory', protoName: 'eventCategory')
+    ..e<EventCategory>(4, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'eventCategory', $pb.PbFieldType.OE, protoName: 'eventCategory', defaultOrMaker: EventCategory.WORK, valueOf: EventCategory.valueOf, enumValues: EventCategory.values)
     ..aOS(5, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'eventSubType', protoName: 'eventSubType')
-    ..aOS(6, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'status')
+    ..e<TaskStatus>(6, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'status', $pb.PbFieldType.OE, defaultOrMaker: TaskStatus.UNKNOWN_STATUS, valueOf: TaskStatus.valueOf, enumValues: TaskStatus.values)
     ..a<$core.int>(7, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'timeChunksRequired', $pb.PbFieldType.O3, protoName: 'timeChunksRequired')
     ..a<$core.int>(8, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'timeChunksSpent', $pb.PbFieldType.O3, protoName: 'timeChunksSpent')
     ..a<$core.int>(9, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'timeChunksRemaining', $pb.PbFieldType.O3, protoName: 'timeChunksRemaining')
@@ -24,15 +30,15 @@ class Task extends $pb.GeneratedMessage {
     ..a<$core.int>(11, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'maxChunkSize', $pb.PbFieldType.O3, protoName: 'maxChunkSize')
     ..aOB(12, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'alwaysPrivate', protoName: 'alwaysPrivate')
     ..aOB(13, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'deleted')
-    ..a<$core.double>(14, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'index', $pb.PbFieldType.OF)
-    ..aOS(15, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'due')
-    ..aOS(16, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'created')
-    ..aOS(17, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'updated')
-    ..aOS(18, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'snoozeUntil', protoName: 'snoozeUntil')
+    ..a<$core.double>(14, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'index', $pb.PbFieldType.OD)
+    ..aOM<$0.Timestamp>(15, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'due', subBuilder: $0.Timestamp.create)
+    ..aOM<$0.Timestamp>(16, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'created', subBuilder: $0.Timestamp.create)
+    ..aOM<$0.Timestamp>(17, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'updated', subBuilder: $0.Timestamp.create)
+    ..aOM<$0.Timestamp>(18, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'snoozeUntil', protoName: 'snoozeUntil', subBuilder: $0.Timestamp.create)
     ..aOB(19, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'adjusted')
     ..aOB(20, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'atRisk', protoName: 'atRisk')
-    ..aOS(21, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'type')
-    ..aOS(22, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'recurringAssignmentType', protoName: 'recurringAssignmentType')
+    ..e<TaskType>(21, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'type', $pb.PbFieldType.OE, defaultOrMaker: TaskType.UNKNOWN_TYPE, valueOf: TaskType.valueOf, enumValues: TaskType.values)
+    ..e<TaskType>(22, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'recurringAssignmentType', $pb.PbFieldType.OE, protoName: 'recurringAssignmentType', defaultOrMaker: TaskType.UNKNOWN_TYPE, valueOf: TaskType.valueOf, enumValues: TaskType.values)
     ..aOS(23, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'eventColor', protoName: 'eventColor')
     ..hasRequiredFields = false
   ;
@@ -42,9 +48,9 @@ class Task extends $pb.GeneratedMessage {
     $core.int? id,
     $core.String? title,
     $core.String? notes,
-    $core.String? eventCategory,
+    EventCategory? eventCategory,
     $core.String? eventSubType,
-    $core.String? status,
+    TaskStatus? status,
     $core.int? timeChunksRequired,
     $core.int? timeChunksSpent,
     $core.int? timeChunksRemaining,
@@ -53,14 +59,14 @@ class Task extends $pb.GeneratedMessage {
     $core.bool? alwaysPrivate,
     $core.bool? deleted,
     $core.double? index,
-    $core.String? due,
-    $core.String? created,
-    $core.String? updated,
-    $core.String? snoozeUntil,
+    $0.Timestamp? due,
+    $0.Timestamp? created,
+    $0.Timestamp? updated,
+    $0.Timestamp? snoozeUntil,
     $core.bool? adjusted,
     $core.bool? atRisk,
-    $core.String? type,
-    $core.String? recurringAssignmentType,
+    TaskType? type,
+    TaskType? recurringAssignmentType,
     $core.String? eventColor,
   }) {
     final _result = create();
@@ -184,9 +190,9 @@ class Task extends $pb.GeneratedMessage {
   void clearNotes() => clearField(3);
 
   @$pb.TagNumber(4)
-  $core.String get eventCategory => $_getSZ(3);
+  EventCategory get eventCategory => $_getN(3);
   @$pb.TagNumber(4)
-  set eventCategory($core.String v) { $_setString(3, v); }
+  set eventCategory(EventCategory v) { setField(4, v); }
   @$pb.TagNumber(4)
   $core.bool hasEventCategory() => $_has(3);
   @$pb.TagNumber(4)
@@ -202,9 +208,9 @@ class Task extends $pb.GeneratedMessage {
   void clearEventSubType() => clearField(5);
 
   @$pb.TagNumber(6)
-  $core.String get status => $_getSZ(5);
+  TaskStatus get status => $_getN(5);
   @$pb.TagNumber(6)
-  set status($core.String v) { $_setString(5, v); }
+  set status(TaskStatus v) { setField(6, v); }
   @$pb.TagNumber(6)
   $core.bool hasStatus() => $_has(5);
   @$pb.TagNumber(6)
@@ -276,47 +282,55 @@ class Task extends $pb.GeneratedMessage {
   @$pb.TagNumber(14)
   $core.double get index => $_getN(13);
   @$pb.TagNumber(14)
-  set index($core.double v) { $_setFloat(13, v); }
+  set index($core.double v) { $_setDouble(13, v); }
   @$pb.TagNumber(14)
   $core.bool hasIndex() => $_has(13);
   @$pb.TagNumber(14)
   void clearIndex() => clearField(14);
 
   @$pb.TagNumber(15)
-  $core.String get due => $_getSZ(14);
+  $0.Timestamp get due => $_getN(14);
   @$pb.TagNumber(15)
-  set due($core.String v) { $_setString(14, v); }
+  set due($0.Timestamp v) { setField(15, v); }
   @$pb.TagNumber(15)
   $core.bool hasDue() => $_has(14);
   @$pb.TagNumber(15)
   void clearDue() => clearField(15);
+  @$pb.TagNumber(15)
+  $0.Timestamp ensureDue() => $_ensure(14);
 
   @$pb.TagNumber(16)
-  $core.String get created => $_getSZ(15);
+  $0.Timestamp get created => $_getN(15);
   @$pb.TagNumber(16)
-  set created($core.String v) { $_setString(15, v); }
+  set created($0.Timestamp v) { setField(16, v); }
   @$pb.TagNumber(16)
   $core.bool hasCreated() => $_has(15);
   @$pb.TagNumber(16)
   void clearCreated() => clearField(16);
+  @$pb.TagNumber(16)
+  $0.Timestamp ensureCreated() => $_ensure(15);
 
   @$pb.TagNumber(17)
-  $core.String get updated => $_getSZ(16);
+  $0.Timestamp get updated => $_getN(16);
   @$pb.TagNumber(17)
-  set updated($core.String v) { $_setString(16, v); }
+  set updated($0.Timestamp v) { setField(17, v); }
   @$pb.TagNumber(17)
   $core.bool hasUpdated() => $_has(16);
   @$pb.TagNumber(17)
   void clearUpdated() => clearField(17);
+  @$pb.TagNumber(17)
+  $0.Timestamp ensureUpdated() => $_ensure(16);
 
   @$pb.TagNumber(18)
-  $core.String get snoozeUntil => $_getSZ(17);
+  $0.Timestamp get snoozeUntil => $_getN(17);
   @$pb.TagNumber(18)
-  set snoozeUntil($core.String v) { $_setString(17, v); }
+  set snoozeUntil($0.Timestamp v) { setField(18, v); }
   @$pb.TagNumber(18)
   $core.bool hasSnoozeUntil() => $_has(17);
   @$pb.TagNumber(18)
   void clearSnoozeUntil() => clearField(18);
+  @$pb.TagNumber(18)
+  $0.Timestamp ensureSnoozeUntil() => $_ensure(17);
 
   @$pb.TagNumber(19)
   $core.bool get adjusted => $_getBF(18);
@@ -337,18 +351,18 @@ class Task extends $pb.GeneratedMessage {
   void clearAtRisk() => clearField(20);
 
   @$pb.TagNumber(21)
-  $core.String get type => $_getSZ(20);
+  TaskType get type => $_getN(20);
   @$pb.TagNumber(21)
-  set type($core.String v) { $_setString(20, v); }
+  set type(TaskType v) { setField(21, v); }
   @$pb.TagNumber(21)
   $core.bool hasType() => $_has(20);
   @$pb.TagNumber(21)
   void clearType() => clearField(21);
 
   @$pb.TagNumber(22)
-  $core.String get recurringAssignmentType => $_getSZ(21);
+  TaskType get recurringAssignmentType => $_getN(21);
   @$pb.TagNumber(22)
-  set recurringAssignmentType($core.String v) { $_setString(21, v); }
+  set recurringAssignmentType(TaskType v) { setField(22, v); }
   @$pb.TagNumber(22)
   $core.bool hasRecurringAssignmentType() => $_has(21);
   @$pb.TagNumber(22)
