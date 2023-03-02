@@ -12,7 +12,7 @@ class BudgetConfig {
   final DateTime startingDay;
 
   const BudgetConfig({
-    required this.budgetMatcher, 
+    required this.budgetMatcher,
     required this.budgetPerDayInChunks,
     required this.startingDay,
   });
@@ -30,36 +30,41 @@ class TimeBudgeter {
   TimeBudgeter(this.config);
   List<Task> balanceTasks(List<Task> tasks) {
     final split = splitByBudgets(tasks);
-    return split.map((sublist) => updateTasksForBudget(sublist, config)).toList().fold([], (all, one) => [...all, ...one]);
+    return split
+        .map((sublist) => updateTasksForBudget(sublist, config))
+        .toList()
+        .fold([], (all, one) => [...all, ...one]);
   }
 
   List<List<Task>> splitByBudgets(List<Task> tasks) {
     final pockets = config.budgetMatcher.map((matcher) {
       return tasks.where(matcher).toList();
     }).toList();
-    return pockets.map((pocket) => updateTasksForBudget(pocket, config)).toList();
+    return pockets
+        .map((pocket) => updateTasksForBudget(pocket, config))
+        .toList();
   }
 
   /// Split task in multiple tasks if it exceeds the budget
-List<Task> splitTaskInTwo(Task task, int requiredChunks) {
-  assert(requiredChunks <= task.timeChunksRequired);
-  assert(requiredChunks <= config.budgetPerDayInChunks);
-  // Calculate the number of chunks per split task
-  return [
-    task.rebuild((task) {
-      task.timeChunksRequired = requiredChunks;
-    }),
-    task.rebuild((task) {
-      task.clearId();
-      task.timeChunksRequired = task.timeChunksRequired - requiredChunks;
-    }),
-  ];
-}
-
+  List<Task> splitTaskInTwo(Task task, int requiredChunks) {
+    assert(requiredChunks <= task.timeChunksRequired);
+    assert(requiredChunks <= config.budgetPerDayInChunks);
+    // Calculate the number of chunks per split task
+    return [
+      task.rebuild((task) {
+        task.timeChunksRequired = requiredChunks;
+      }),
+      task.rebuild((task) {
+        task.clearId();
+        task.timeChunksRequired = task.timeChunksRequired - requiredChunks;
+      }),
+    ];
+  }
 
   DateTime morningTime(DateTime date) {
     return DateTime(date.year, date.month, date.day, 6, 0, 0);
   }
+
   DateTime eveningTime(DateTime date) {
     return DateTime(date.year, date.month, date.day, 22, 0, 0);
   }
@@ -97,7 +102,8 @@ List<Task> splitTaskInTwo(Task task, int requiredChunks) {
       }
       // task is now the proper time, but might be exceeding the budget
       // split task into multiple tasks, add the second one for later in the list
-      final remainingSpaceForDay = config.budgetPerDayInChunks - currentDayUsedUpBudgetChunks;
+      final remainingSpaceForDay =
+          config.budgetPerDayInChunks - currentDayUsedUpBudgetChunks;
       final splitTasks = splitTaskInTwo(task, remainingSpaceForDay);
       tasks[i] = splitTasks[0];
       // insert the rest of the tasks into the list for processing
@@ -106,7 +112,6 @@ List<Task> splitTaskInTwo(Task task, int requiredChunks) {
     }
     return tasks;
   }
-
 
   Task createPlaceholderTask(Timestamp date, int timeChunksRequired) {
     return Task(
