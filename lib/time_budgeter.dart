@@ -64,48 +64,48 @@ List<Task> splitTaskInTwo(Task task, int requiredChunks) {
     return DateTime(date.year, date.month, date.day, 22, 0, 0);
   }
 
-/// This function takes a time budget config and creates and updates the taskToSort list to fit the budget.
-/// It iterates over all the tasks, determining if the budget is exceeded. If it is, it creates a placeholder task
-/// While iterating over the tasks, it calculates the remaining time left in the current day.
-/// If the task cannot be completed in the current day, it makes the task shorter, then duplicates the task into the next day as many times as necessary over and over until it is lower than the budget at some point.
-List<Task> updateTasksForBudget(List<Task> tasksToSort, BudgetConfig config) {
-  final tasks = [...tasksToSort];
-  var currentDate = config.startingDay;
-  // loop through the tasks in the budget
-  var currentDayUsedUpBudgetChunks = 0;
-  for (var i = 0; i < tasks.length; i++) {
-    // for every task determine if it's in the budget
-    var task = tasks[i];
-    if (currentDayUsedUpBudgetChunks == config.budgetPerDayInChunks) {
-      // if the current day is used up, reset the current day used up budget chunks
-      currentDayUsedUpBudgetChunks = 0;
-      // and set the current date to the next day
-      currentDate = currentDate.add(const Duration(days: 1));
+  /// This function takes a time budget config and creates and updates the taskToSort list to fit the budget.
+  /// It iterates over all the tasks, determining if the budget is exceeded. If it is, it creates a placeholder task
+  /// While iterating over the tasks, it calculates the remaining time left in the current day.
+  /// If the task cannot be completed in the current day, it makes the task shorter, then duplicates the task into the next day as many times as necessary over and over until it is lower than the budget at some point.
+  List<Task> updateTasksForBudget(List<Task> tasksToSort, BudgetConfig config) {
+    final tasks = [...tasksToSort];
+    var currentDate = config.startingDay;
+    // loop through the tasks in the budget
+    var currentDayUsedUpBudgetChunks = 0;
+    for (var i = 0; i < tasks.length; i++) {
+      // for every task determine if it's in the budget
+      var task = tasks[i];
+      if (currentDayUsedUpBudgetChunks == config.budgetPerDayInChunks) {
+        // if the current day is used up, reset the current day used up budget chunks
+        currentDayUsedUpBudgetChunks = 0;
+        // and set the current date to the next day
+        currentDate = currentDate.add(const Duration(days: 1));
+      }
+      // reset the task just in case to the current date
+      task = task.rebuild((task) {
+        task
+          ..snoozeUntil = Timestamp.fromDateTime(morningTime(currentDate))
+          ..due = Timestamp.fromDateTime(eveningTime(currentDate));
+      });
+      tasks[i] = task;
+      // if the task is in the budget
+      // if (taskIsInTheBudget(task)) continue;
+      if (task.timeChunksRequired <= config.budgetPerDayInChunks) {
+        currentDayUsedUpBudgetChunks += task.timeChunksRequired;
+        continue;
+      }
+      // task is now the proper time, but might be exceeding the budget
+      // split task into multiple tasks, add the second one for later in the list
+      final remainingSpaceForDay = config.budgetPerDayInChunks - currentDayUsedUpBudgetChunks;
+      final splitTasks = splitTaskInTwo(task, remainingSpaceForDay);
+      tasks[i] = splitTasks[0];
+      // insert the rest of the tasks into the list for processing
+      tasks.insertAll(i + 1, splitTasks.sublist(1));
+      currentDayUsedUpBudgetChunks += remainingSpaceForDay;
     }
-    // reset the task just in case to the current date
-    task = task.rebuild((task) {
-      task
-        ..snoozeUntil = Timestamp.fromDateTime(morningTime(currentDate))
-        ..due = Timestamp.fromDateTime(eveningTime(currentDate));
-    });
-    tasks[i] = task;
-    // if the task is in the budget
-    // if (taskIsInTheBudget(task)) continue;
-    if (task.timeChunksRequired <= config.budgetPerDayInChunks) {
-      currentDayUsedUpBudgetChunks += task.timeChunksRequired;
-      continue;
-    }
-    // task is now the proper time, but might be exceeding the budget
-    // split task into multiple tasks, add the second one for later in the list
-    final remainingSpaceForDay = config.budgetPerDayInChunks - currentDayUsedUpBudgetChunks;
-    final splitTasks = splitTaskInTwo(task, remainingSpaceForDay);
-    tasks[i] = splitTasks[0];
-    // insert the rest of the tasks into the list for processing
-    tasks.insertAll(i + 1, splitTasks.sublist(1));
-    currentDayUsedUpBudgetChunks += remainingSpaceForDay;
+    return tasks;
   }
-  return tasks;
-}
 
 
   Task createPlaceholderTask(Timestamp date, int timeChunksRequired) {
