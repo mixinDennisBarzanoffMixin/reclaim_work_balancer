@@ -98,6 +98,12 @@ class _MyAppState extends State<MyApp> {
                   .map((item) => ListTile(
                         key: ValueKey(item),
                         title: Text(item.title),
+                        subtitle: Text(
+                          "${item.timeChunksRemaining / 4}h",
+                        ),
+                        tileColor: item.eventCategory == EventCategory.WORK
+                            ? Colors.blue
+                            : Colors.orange,
                       ))
                   .toList(),
               onReorder: (oldIndex, newIndex) {
@@ -112,29 +118,9 @@ class _MyAppState extends State<MyApp> {
                     await service.reindex(oldTask, direction, newTask.id);
                     await refresh();
                   }();
-                  // final 
-                  // final item = tasks.removeAt(oldIndex);
-                  // _items.insert(newIndex, item);
                 });
               },
             );
-            // return ListView.builder(
-            //   itemCount: tasks.length,
-            //   itemBuilder: (context, index) {
-            //     final task = tasks[index];
-            //     return SizedBox(
-            //       width: double.infinity,
-            //       child: Column(
-            //         children: [
-            //           Text(
-            //             "${task.eventCategory} ${task.timeChunksRemaining / 4}h",
-            //             style: Theme.of(context).textTheme.headline4,
-            //           ),
-            //         ],
-            //       ),
-            //     );
-            //   },
-            // );
           }),
         ),
       ),
