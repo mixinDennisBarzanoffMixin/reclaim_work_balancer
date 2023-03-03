@@ -72,13 +72,16 @@ class _MyAppState extends State<MyApp> {
 
                   final pouches = timeBudgeter.splitByBudgets(tasks);
                   for (final pouch in pouches) {
-                    for (final task in pouch) {
+                    for (int i = 0; i < pouch.length; i++) {
+                      final task = pouch[i];
                       if (task.hasId()) {
                         await service.updateTask(task);
                       } else {
                         final Task newTask = await service.createTask(task);
-                        // reindex after task
-                        await service.reindex(newTask, "after", task.id);
+                        pouch[i] = newTask;
+                      }
+                      if (i != 0) {
+                        await service.reindex(pouch[i], "after", pouch[i - 1].id);
                       }
                     }
                   }
