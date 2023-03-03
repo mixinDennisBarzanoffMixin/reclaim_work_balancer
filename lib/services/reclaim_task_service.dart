@@ -6,13 +6,16 @@ import 'package:http/http.dart' as http;
 class ReclaimTaskService {
   final http.Client client;
   ReclaimTaskService(this.client);
-  Future<List<Task>> fetchAllTasks() async {
+  Future<List<Task>> fetchAllTasks({
+    bool instances = false,
+  }) async {
     final url = Uri.https(
       'api.app.reclaim.ai',
       '/api/tasks',
       {
         'status':
-            '${TaskStatus.NEW},${TaskStatus.SCHEDULED},${TaskStatus.IN_PROGRESS},${TaskStatus.COMPLETED}'
+            '${TaskStatus.NEW},${TaskStatus.SCHEDULED},${TaskStatus.IN_PROGRESS},${TaskStatus.COMPLETED}',
+        if (instances) 'instances': 'true',
       },
     );
 

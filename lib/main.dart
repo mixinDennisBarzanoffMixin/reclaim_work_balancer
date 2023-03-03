@@ -10,15 +10,6 @@ import 'package:reclaim_work_balancer/util/time_conversion.dart';
 import 'models/grpc/reclaim_task.pb.dart';
 
 void main() {
-  String jsonString = '{"id": 2382282, "title": "SMBM-1788"}';
-
-  Map<String, dynamic> jsonMap = json.decode(jsonString);
-
-  final task = Task()..mergeFromProto3Json(jsonMap);
-  // Task task = Task.fromJson(jsonString).toProto3Json();
-
-  print(task.id); // prints 2382282
-  print(task.title); // prints SMBM-1788
   runApp(const MyApp());
 }
 

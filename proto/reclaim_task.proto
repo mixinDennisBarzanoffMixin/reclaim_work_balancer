@@ -28,6 +28,18 @@ message Task {
   TaskType type = 21;
   TaskType recurringAssignmentType = 22;
   string eventColor = 23;
+  repeated TaskInstance instances = 24;
+}
+
+message TaskInstance {
+  int32 taskId = 1;
+  string eventId = 2;
+  string eventKey = 3;
+  string status = 4;
+  google.protobuf.Timestamp start = 5;
+  google.protobuf.Timestamp end = 6;
+  int32 index = 7;
+  bool pinned = 8;
 }
 
 enum EventCategory {
