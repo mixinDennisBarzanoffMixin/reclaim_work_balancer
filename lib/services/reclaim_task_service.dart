@@ -83,4 +83,25 @@ class ReclaimTaskService {
       ..freeze();
     return newTask;
   }
+  
+  Future<void> reindex(Task task, String reindexDirection, int relativeTaskId) async {
+    final url = Uri.https('api.app.reclaim.ai', '/api/tasks/${task.id}/reindex');
+    
+    final headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer c59e0b11-9cc8-4e03-bb50-ba55d0e71fd1',
+    };
+    
+    final body = jsonEncode({
+      'reindexDirection': reindexDirection,
+      'relativeTaskId': relativeTaskId,
+    });
+    
+    final response = await client.patch(url, headers: headers, body: body);
+    
+    if (response.statusCode != 200) {
+      throw 'Unexpected status code ${response.statusCode}';
+    }
+  }
+
 }

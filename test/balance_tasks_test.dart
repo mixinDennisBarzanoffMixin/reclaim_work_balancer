@@ -27,6 +27,7 @@ void main() {
         ..due = Timestamp.fromDateTime(DateTime(2023, 11, 12))
         ..eventCategory = EventCategory.WORK
         ..timeChunksRequired = 5 * 4
+        ..timeChunksRemaining = 5 * 4
         ..freeze(),
         4 * 4,
       );
@@ -137,6 +138,7 @@ void main() {
         ..due = Timestamp.fromDateTime(DateTime(2023, 11, 12))
         ..eventCategory = EventCategory.WORK
         ..timeChunksRequired = 4 * 5
+        ..timeChunksRemaining = 4 * 5
         ..freeze();
 
       final personalTask = Task()
@@ -147,6 +149,7 @@ void main() {
         ..due = Timestamp.fromDateTime(DateTime(2023, 11, 12))
         ..eventCategory = EventCategory.PERSONAL
         ..timeChunksRequired = 4
+        ..timeChunksRemaining = 4
         ..freeze();
 
       final tasks = [workTask, personalTask];
@@ -155,12 +158,14 @@ void main() {
       expect(splitTasks[0], orderedEquals([
           workTask.rebuild((task) {
             task.timeChunksRequired = 4 * 4;
+            task.timeChunksRemaining = 4 * 4;
             task.snoozeUntil = Timestamp.fromDateTime(DateTime(2023, 11, 12, 6));
             task.due = Timestamp.fromDateTime(DateTime(2023, 11, 12, 22));
           }),
           workTask.rebuild((task) {
             task.clearId();
             task.timeChunksRequired = 4;
+            task.timeChunksRemaining = 4 * 4;
             task.due = Timestamp.fromDateTime(DateTime(2023, 11, 13, 22));
             task.snoozeUntil = Timestamp.fromDateTime(DateTime(2023, 11, 13, 6));
           }),
@@ -178,6 +183,7 @@ void main() {
         ..due = Timestamp.fromDateTime(DateTime(2023, 11, 12))
         ..eventCategory = EventCategory.WORK
         ..timeChunksRequired = 4 * 10
+        ..timeChunksRemaining = 4 * 10
         ..freeze();
 
       final workTask2 = Task()
@@ -188,6 +194,7 @@ void main() {
         ..due = Timestamp.fromDateTime(DateTime(2023, 11, 14))
         ..eventCategory = EventCategory.WORK
         ..timeChunksRequired = 4 * 2
+        ..timeChunksRemaining = 4 * 2
         ..freeze();
 
       final tasks = [workTask1, workTask2];
@@ -196,6 +203,7 @@ void main() {
       expect(splitTasks[0], orderedEquals([
           workTask1.rebuild((task) {
             task.timeChunksRequired = 4 * 4;
+            task.timeChunksRemaining = 4 * 4;
             task.snoozeUntil = Timestamp.fromDateTime(DateTime(2023, 11, 12, 6));
             task.due = Timestamp.fromDateTime(DateTime(2023, 11, 12, 22));
           }),
@@ -208,11 +216,13 @@ void main() {
           workTask1.rebuild((task) {
             task.clearId();
             task.timeChunksRequired = 4 * 2;
+            task.timeChunksRemaining = 4 * 2;
             task.due = Timestamp.fromDateTime(DateTime(2023, 11, 14, 22));
             task.snoozeUntil = Timestamp.fromDateTime(DateTime(2023, 11, 14, 6));
           }),
           workTask2.rebuild((task) {
             task.timeChunksRequired = 4 * 2;
+            task.timeChunksRemaining = 4 * 2;
             task.due = Timestamp.fromDateTime(DateTime(2023, 11, 14, 22));
             task.snoozeUntil = Timestamp.fromDateTime(DateTime(2023, 11, 14, 6));
           }),

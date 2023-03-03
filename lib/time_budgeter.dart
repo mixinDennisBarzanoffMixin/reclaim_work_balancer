@@ -47,16 +47,16 @@ class TimeBudgeter {
 
   /// Split task in multiple tasks if it exceeds the budget
   List<Task> splitTaskInTwo(Task task, int requiredChunks) {
-    assert(requiredChunks <= task.timeChunksRequired);
+    assert(requiredChunks <= task.timeChunksRemaining);
     assert(requiredChunks <= config.budgetPerDayInChunks);
     // Calculate the number of chunks per split task
     return [
       task.rebuild((task) {
-        task.timeChunksRequired = requiredChunks;
+        task.timeChunksRemaining = requiredChunks;
       }),
       task.rebuild((task) {
         task.clearId();
-        task.timeChunksRequired = task.timeChunksRequired - requiredChunks;
+        task.timeChunksRemaining = task.timeChunksRemaining - requiredChunks;
       }),
     ];
   }
@@ -96,8 +96,8 @@ class TimeBudgeter {
       tasks[i] = task;
       // if the task is in the budget
       // if (taskIsInTheBudget(task)) continue;
-      if (task.timeChunksRequired <= config.budgetPerDayInChunks) {
-        currentDayUsedUpBudgetChunks += task.timeChunksRequired;
+      if (task.timeChunksRemaining <= config.budgetPerDayInChunks) {
+        currentDayUsedUpBudgetChunks += task.timeChunksRemaining;
         continue;
       }
       // task is now the proper time, but might be exceeding the budget

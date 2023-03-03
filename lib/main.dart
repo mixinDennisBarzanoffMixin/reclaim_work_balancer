@@ -45,10 +45,12 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     service = ReclaimTaskService(client);
-    service.fetchAllTasks().then((value) {
-      setState(() {
-        tasks = value;
-      });
+    refresh();
+  }
+  Future<void> refresh() async {
+    final value = await service.fetchAllTasks();
+    setState(() {
+      tasks = value;
     });
   }
 
@@ -60,7 +62,7 @@ class _MyAppState extends State<MyApp> {
           onPressed: tasks.isEmpty
               ? null
               : () async {
-                  tasks = await service.fetchAllTasks();
+                  await refresh();
                   // iterate over the list of pouches
                   // for each pouch, iterate over the tasks
                   // for each task, check if it has an id
@@ -74,14 +76,13 @@ class _MyAppState extends State<MyApp> {
                       if (task.hasId()) {
                         await service.updateTask(task);
                       } else {
-                        await service.createTask(task);
+                        final Task newTask = await service.createTask(task);
+                        // reindex after task
+                        // await service.reindex(newTask, "after", task.id);
                       }
                     }
                   }
-                  final newTasks = await service.fetchAllTasks();
-                  setState(() {
-                    tasks = newTasks;
-                  });
+                  await refresh();
                 },
           child: const Icon(Icons.refresh),
         ),
@@ -91,23 +92,48 @@ class _MyAppState extends State<MyApp> {
               child: CircularProgressIndicator(),
             );
           }
-          return ListView.builder(
-            itemCount: tasks.length,
-            itemBuilder: (context, index) {
-              final task = tasks[index];
-              return SizedBox(
-                width: double.infinity,
-                child: Column(
-                  children: [
-                    Text(
-                      "${task.eventCategory} ${task.timeChunksRemaining / 4}h",
-                      style: Theme.of(context).textTheme.headline4,
-                    ),
-                  ],
-                ),
-              );
+          return ReorderableListView(
+            children: tasks
+                .map((item) => ListTile(
+                      key: ValueKey(item),
+                      title: Text(item.title),
+                    ))
+                .toList(),
+            onReorder: (oldIndex, newIndex) {
+              setState(() {
+                if (newIndex > oldIndex) {
+                  newIndex -= 1;
+                }
+                final newTask = tasks[newIndex];
+                final oldTask = tasks[oldIndex];
+                final direction = oldIndex < newIndex ? "after" : "before";
+                () async {
+                  await service.reindex(oldTask, direction, newTask.id);
+                  await refresh();
+                }();
+                // final 
+                // final item = tasks.removeAt(oldIndex);
+                // _items.insert(newIndex, item);
+              });
             },
           );
+          // return ListView.builder(
+          //   itemCount: tasks.length,
+          //   itemBuilder: (context, index) {
+          //     final task = tasks[index];
+          //     return SizedBox(
+          //       width: double.infinity,
+          //       child: Column(
+          //         children: [
+          //           Text(
+          //             "${task.eventCategory} ${task.timeChunksRemaining / 4}h",
+          //             style: Theme.of(context).textTheme.headline4,
+          //           ),
+          //         ],
+          //       ),
+          //     );
+          //   },
+          // );
         }),
       ),
     );
