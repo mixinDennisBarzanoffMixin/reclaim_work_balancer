@@ -3,6 +3,7 @@ import 'package:protobuf/protobuf.dart';
 import 'package:reclaim_work_balancer/models/grpc/google/protobuf/timestamp.pb.dart';
 import 'package:reclaim_work_balancer/models/grpc/reclaim_task.pb.dart';
 import 'package:reclaim_work_balancer/time_budgeter.dart';
+import 'package:reclaim_work_balancer/util/time_conversion.dart';
 
 void main() {
   group('Test reclaim tasks balancer', () {
@@ -13,7 +14,7 @@ void main() {
         BudgetConfig(
           budgetMatcher: 
             [(Task task) => task.eventCategory == EventCategory.WORK], 
-            budgetPerDayInChunks: 4 * 4, 
+            budgetPerDayInChunks: 4.hours, 
             startingDay: DateTime(2023, 11, 12),
         ),
       );
@@ -26,8 +27,9 @@ void main() {
         ..status = TaskStatus.NEW
         ..due = Timestamp.fromDateTime(DateTime(2023, 11, 12))
         ..eventCategory = EventCategory.WORK
-        ..timeChunksRequired = 5 * 4
-        ..timeChunksRemaining = 5 * 4
+        ..timeChunksRequired = 5.hours
+        ..timeChunksRemaining = 5.hours
+        ..timeChunksSpent = 0
         ..freeze(),
         4 * 4,
       );
@@ -39,7 +41,9 @@ void main() {
           ..status = TaskStatus.NEW
           ..due = Timestamp.fromDateTime(DateTime(2023, 11, 12))
           ..eventCategory = EventCategory.WORK
-          ..timeChunksRequired = 4 * 4
+          ..timeChunksRequired = 4.hours
+          ..timeChunksRemaining = 4.hours
+          ..timeChunksSpent = 0.hours
           ..freeze(),
         Task()
           ..title = 'Example Task'
@@ -47,7 +51,48 @@ void main() {
           ..status = TaskStatus.NEW
           ..due = Timestamp.fromDateTime(DateTime(2023, 11, 12))
           ..eventCategory = EventCategory.WORK
-          ..timeChunksRequired = 1 * 4
+          ..timeChunksRequired = 1.hours
+          ..timeChunksRemaining = 1.hours
+          ..timeChunksSpent = 0.hours
+          ..freeze(),
+      ]));
+    });
+    test('Test splitting one task with different time remaining', () {
+      final List<Task> tasks = budgeter.splitTaskInTwo(Task()
+        ..id = 123
+        ..title = 'Example Task'
+        ..notes = 'This is an example task'
+        ..status = TaskStatus.NEW
+        ..due = Timestamp.fromDateTime(DateTime(2023, 11, 12))
+        ..eventCategory = EventCategory.WORK
+        ..timeChunksRequired = 5.hours
+        ..timeChunksRemaining = 4.hours + 1.halfHours
+        ..timeChunksSpent = 1.halfHours
+        ..freeze(),
+        4 * 4,
+      );
+      expect(tasks, orderedEquals([
+        Task()
+          ..id = 123
+          ..title = 'Example Task'
+          ..notes = 'This is an example task'
+          ..status = TaskStatus.NEW
+          ..due = Timestamp.fromDateTime(DateTime(2023, 11, 12))
+          ..eventCategory = EventCategory.WORK
+          ..timeChunksRequired = 4.hours
+          ..timeChunksRemaining = 3.hours + 1.halfHours
+          ..timeChunksSpent = 1.halfHours
+          ..freeze(),
+          // remainder
+        Task()
+          ..title = 'Example Task'
+          ..notes = 'This is an example task'
+          ..status = TaskStatus.NEW
+          ..due = Timestamp.fromDateTime(DateTime(2023, 11, 12))
+          ..eventCategory = EventCategory.WORK
+          ..timeChunksRequired = 1.halfHours
+          ..timeChunksRemaining = 1.halfHours
+          ..timeChunksSpent = 0
           ..freeze(),
       ]));
     });
@@ -59,7 +104,9 @@ void main() {
         ..status = TaskStatus.NEW
         ..due = Timestamp.fromDateTime(DateTime(2023, 11, 12))
         ..eventCategory = EventCategory.WORK
-        ..timeChunksRequired = 5 * 4
+        ..timeChunksRequired = 5.hours
+        ..timeChunksRemaining = 5.hours
+        ..timeChunksSpent = 0.hours
         ..freeze();
         
       final placeholder = Task()
@@ -68,7 +115,9 @@ void main() {
         ..status = TaskStatus.NEW
         ..due = Timestamp.fromDateTime(DateTime(2023, 11, 13))
         ..eventCategory = EventCategory.WORK
-        ..timeChunksRequired = 3 * 4
+        ..timeChunksRequired = 3.hours
+        ..timeChunksRemaining = 3.hours
+        ..timeChunksSpent = 0.hours
         ..freeze();
 
        final split = budgeter.splitByBudgets([task, placeholder]);
@@ -81,7 +130,9 @@ void main() {
             ..snoozeUntil = Timestamp.fromDateTime(DateTime(2023, 11, 12, 6))
             ..due = Timestamp.fromDateTime(DateTime(2023, 11, 12, 22))
             ..eventCategory = EventCategory.WORK
-            ..timeChunksRequired = 4 * 4
+            ..timeChunksRequired = 4.hours
+            ..timeChunksRemaining = 4.hours
+            ..timeChunksSpent = 0.hours
             ..freeze(),
           Task()
             ..title = 'Example Task'
@@ -90,7 +141,9 @@ void main() {
             ..snoozeUntil = Timestamp.fromDateTime(DateTime(2023, 11, 13, 6))
             ..due = Timestamp.fromDateTime(DateTime(2023, 11, 13, 22))
             ..eventCategory = EventCategory.WORK
-            ..timeChunksRequired = 1 * 4
+            ..timeChunksRequired = 1.hours
+            ..timeChunksRemaining = 1.hours
+            ..timeChunksSpent = 0.hours
             ..freeze(),
           Task()
             ..id = 124
@@ -99,7 +152,9 @@ void main() {
             ..snoozeUntil = Timestamp.fromDateTime(DateTime(2023, 11, 13, 6))
             ..due = Timestamp.fromDateTime(DateTime(2023, 11, 13, 22))
             ..eventCategory = EventCategory.WORK
-            ..timeChunksRequired = 3 * 4
+            ..timeChunksRequired = 3.hours
+            ..timeChunksRemaining = 3.hours
+            ..timeChunksSpent = 0.hours
             ..freeze(),
         ]),
        );
@@ -112,7 +167,7 @@ void main() {
         ..status = TaskStatus.NEW
         ..due = Timestamp.fromDateTime(DateTime(2023, 11, 12))
         ..eventCategory = EventCategory.WORK
-        ..timeChunksRequired = 1 * 4
+        ..timeChunksRequired = 1.hours
         ..freeze();
           
       final split = budgeter.splitByBudgets([task]);
@@ -125,7 +180,7 @@ void main() {
           ..snoozeUntil = Timestamp.fromDateTime(DateTime(2023, 11, 12, 6))
           ..due = Timestamp.fromDateTime(DateTime(2023, 11, 12, 22))
           ..eventCategory = EventCategory.WORK
-          ..timeChunksRequired = 1 * 4
+          ..timeChunksRequired = 1.hours 
           ..freeze(),
       ]));
     });
@@ -137,8 +192,9 @@ void main() {
         ..status = TaskStatus.NEW
         ..due = Timestamp.fromDateTime(DateTime(2023, 11, 12))
         ..eventCategory = EventCategory.WORK
-        ..timeChunksRequired = 4 * 5
-        ..timeChunksRemaining = 4 * 5
+        ..timeChunksRequired = 5.hours
+        ..timeChunksRemaining = 5.hours
+        ..timeChunksSpent = 0.hours
         ..freeze();
 
       final personalTask = Task()
@@ -148,8 +204,9 @@ void main() {
         ..status = TaskStatus.NEW
         ..due = Timestamp.fromDateTime(DateTime(2023, 11, 12))
         ..eventCategory = EventCategory.PERSONAL
-        ..timeChunksRequired = 4
-        ..timeChunksRemaining = 4
+        ..timeChunksRequired = 1.hours
+        ..timeChunksRemaining = 1.hours
+        ..timeChunksSpent = 0.hours
         ..freeze();
 
       final tasks = [workTask, personalTask];
@@ -157,15 +214,17 @@ void main() {
       
       expect(splitTasks[0], orderedEquals([
           workTask.rebuild((task) {
-            task.timeChunksRequired = 4 * 4;
-            task.timeChunksRemaining = 4 * 4;
+            task.timeChunksRequired = 4.hours;
+            task.timeChunksRemaining = 4.hours;
+            task.timeChunksSpent = 0.hours;
             task.snoozeUntil = Timestamp.fromDateTime(DateTime(2023, 11, 12, 6));
             task.due = Timestamp.fromDateTime(DateTime(2023, 11, 12, 22));
           }),
           workTask.rebuild((task) {
             task.clearId();
-            task.timeChunksRequired = 4;
-            task.timeChunksRemaining = 4 * 4;
+            task.timeChunksRequired = 1.hours;
+            task.timeChunksRemaining = 1.hours;
+            task.timeChunksSpent = 0.hours;
             task.due = Timestamp.fromDateTime(DateTime(2023, 11, 13, 22));
             task.snoozeUntil = Timestamp.fromDateTime(DateTime(2023, 11, 13, 6));
           }),
@@ -182,8 +241,9 @@ void main() {
         ..status = TaskStatus.NEW
         ..due = Timestamp.fromDateTime(DateTime(2023, 11, 12))
         ..eventCategory = EventCategory.WORK
-        ..timeChunksRequired = 4 * 10
-        ..timeChunksRemaining = 4 * 10
+        ..timeChunksRequired = 10.hours
+        ..timeChunksRemaining = 10.hours
+        ..timeChunksSpent = 0.hours
         ..freeze();
 
       final workTask2 = Task()
@@ -193,8 +253,9 @@ void main() {
         ..status = TaskStatus.NEW
         ..due = Timestamp.fromDateTime(DateTime(2023, 11, 14))
         ..eventCategory = EventCategory.WORK
-        ..timeChunksRequired = 4 * 2
-        ..timeChunksRemaining = 4 * 2
+        ..timeChunksRequired = 2.hours
+        ..timeChunksRemaining = 2.hours
+        ..timeChunksSpent = 0.hours
         ..freeze();
 
       final tasks = [workTask1, workTask2];
@@ -202,27 +263,32 @@ void main() {
 
       expect(splitTasks[0], orderedEquals([
           workTask1.rebuild((task) {
-            task.timeChunksRequired = 4 * 4;
-            task.timeChunksRemaining = 4 * 4;
+            task.timeChunksRequired = 4.hours;
+            task.timeChunksRemaining = 4.hours;
+            task.timeChunksSpent = 0.hours;
             task.snoozeUntil = Timestamp.fromDateTime(DateTime(2023, 11, 12, 6));
             task.due = Timestamp.fromDateTime(DateTime(2023, 11, 12, 22));
           }),
           workTask1.rebuild((task) {
             task.clearId();
-            task.timeChunksRequired = 4 * 4;
+            task.timeChunksRequired = 4.hours;
+            task.timeChunksRemaining = 4.hours;
+            task.timeChunksSpent = 0.hours;
             task.due = Timestamp.fromDateTime(DateTime(2023, 11, 13, 22));
             task.snoozeUntil = Timestamp.fromDateTime(DateTime(2023, 11, 13, 6));
           }),
           workTask1.rebuild((task) {
             task.clearId();
-            task.timeChunksRequired = 4 * 2;
-            task.timeChunksRemaining = 4 * 2;
+            task.timeChunksRequired = 2.hours;
+            task.timeChunksRemaining = 2.hours;
+            task.timeChunksSpent = 0.hours;
             task.due = Timestamp.fromDateTime(DateTime(2023, 11, 14, 22));
             task.snoozeUntil = Timestamp.fromDateTime(DateTime(2023, 11, 14, 6));
           }),
           workTask2.rebuild((task) {
-            task.timeChunksRequired = 4 * 2;
-            task.timeChunksRemaining = 4 * 2;
+            task.timeChunksRequired = 2.hours;
+            task.timeChunksRemaining = 2.hours;
+            task.timeChunksSpent = 0.hours;
             task.due = Timestamp.fromDateTime(DateTime(2023, 11, 14, 22));
             task.snoozeUntil = Timestamp.fromDateTime(DateTime(2023, 11, 14, 6));
           }),

@@ -50,13 +50,23 @@ class TimeBudgeter {
     assert(requiredChunks <= task.timeChunksRemaining);
     assert(requiredChunks <= config.budgetPerDayInChunks);
     // Calculate the number of chunks per split task
+    // case 1: the task is smaller or equal to the required chunks
+    if (task.timeChunksRemaining <= requiredChunks) {
+      return [task];
+    }
+    // case 2: the task is bigger than the required chunks
     return [
       task.rebuild((task) {
-        task.timeChunksRemaining = requiredChunks;
+        // task.timeChunksRequired = requiredChunks;
+        task.timeChunksRemaining = requiredChunks - task.timeChunksSpent;
+        task.timeChunksRequired = task.timeChunksRemaining + task.timeChunksSpent;
+        // task.timeChunksSpent = 0;
       }),
       task.rebuild((task) {
         task.clearId();
         task.timeChunksRemaining = task.timeChunksRemaining - requiredChunks;
+        task.timeChunksRequired = task.timeChunksRemaining;
+        task.timeChunksSpent = 0;
       }),
     ];
   }

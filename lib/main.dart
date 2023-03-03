@@ -78,7 +78,7 @@ class _MyAppState extends State<MyApp> {
                       } else {
                         final Task newTask = await service.createTask(task);
                         // reindex after task
-                        // await service.reindex(newTask, "after", task.id);
+                        await service.reindex(newTask, "after", task.id);
                       }
                     }
                   }
