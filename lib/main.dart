@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:reclaim_work_balancer/services/reclaim_task_service.dart';
 import 'package:reclaim_work_balancer/time_budgeter.dart';
+import 'package:reclaim_work_balancer/util/time_conversion.dart';
 
 import 'models/grpc/reclaim_task.pb.dart';
 
@@ -36,7 +37,7 @@ class _MyAppState extends State<MyApp> {
   final timeBudgeter = TimeBudgeter(
     BudgetConfig(
       budgetMatcher: [(Task task) => task.eventCategory == EventCategory.WORK],
-      budgetPerDayInChunks: 4 * 4,
+      budgetPerDayInChunks: 4.hours,
       startingDay: DateTime.now(),
     ),
   );
