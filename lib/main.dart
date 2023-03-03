@@ -86,55 +86,57 @@ class _MyAppState extends State<MyApp> {
                 },
           child: const Icon(Icons.refresh),
         ),
-        body: Builder(builder: (context) {
-          if (tasks.isEmpty) {
-            return const Center(
-              child: CircularProgressIndicator(),
+        body: SafeArea(
+          child: Builder(builder: (context) {
+            if (tasks.isEmpty) {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+            return ReorderableListView(
+              children: tasks
+                  .map((item) => ListTile(
+                        key: ValueKey(item),
+                        title: Text(item.title),
+                      ))
+                  .toList(),
+              onReorder: (oldIndex, newIndex) {
+                setState(() {
+                  if (newIndex > oldIndex) {
+                    newIndex -= 1;
+                  }
+                  final newTask = tasks[newIndex];
+                  final oldTask = tasks[oldIndex];
+                  final direction = oldIndex < newIndex ? "after" : "before";
+                  () async {
+                    await service.reindex(oldTask, direction, newTask.id);
+                    await refresh();
+                  }();
+                  // final 
+                  // final item = tasks.removeAt(oldIndex);
+                  // _items.insert(newIndex, item);
+                });
+              },
             );
-          }
-          return ReorderableListView(
-            children: tasks
-                .map((item) => ListTile(
-                      key: ValueKey(item),
-                      title: Text(item.title),
-                    ))
-                .toList(),
-            onReorder: (oldIndex, newIndex) {
-              setState(() {
-                if (newIndex > oldIndex) {
-                  newIndex -= 1;
-                }
-                final newTask = tasks[newIndex];
-                final oldTask = tasks[oldIndex];
-                final direction = oldIndex < newIndex ? "after" : "before";
-                () async {
-                  await service.reindex(oldTask, direction, newTask.id);
-                  await refresh();
-                }();
-                // final 
-                // final item = tasks.removeAt(oldIndex);
-                // _items.insert(newIndex, item);
-              });
-            },
-          );
-          // return ListView.builder(
-          //   itemCount: tasks.length,
-          //   itemBuilder: (context, index) {
-          //     final task = tasks[index];
-          //     return SizedBox(
-          //       width: double.infinity,
-          //       child: Column(
-          //         children: [
-          //           Text(
-          //             "${task.eventCategory} ${task.timeChunksRemaining / 4}h",
-          //             style: Theme.of(context).textTheme.headline4,
-          //           ),
-          //         ],
-          //       ),
-          //     );
-          //   },
-          // );
-        }),
+            // return ListView.builder(
+            //   itemCount: tasks.length,
+            //   itemBuilder: (context, index) {
+            //     final task = tasks[index];
+            //     return SizedBox(
+            //       width: double.infinity,
+            //       child: Column(
+            //         children: [
+            //           Text(
+            //             "${task.eventCategory} ${task.timeChunksRemaining / 4}h",
+            //             style: Theme.of(context).textTheme.headline4,
+            //           ),
+            //         ],
+            //       ),
+            //     );
+            //   },
+            // );
+          }),
+        ),
       ),
     );
   }
