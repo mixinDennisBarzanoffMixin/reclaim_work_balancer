@@ -2,7 +2,11 @@ syntax = "proto3";
 
 package time_policy;
 
-message TimePolicy {
+
+  message MapFieldEntry {
+    string key = 1;
+    DayHoursMap value = 2;
+  }
   message DayHours {
     message Interval {
       string start = 1;
@@ -10,7 +14,7 @@ message TimePolicy {
       double duration = 3;
     }
 
-    map<string, Interval> intervals = 1;
+    repeated Interval intervals = 1;
     string end_of_day = 2;
   }
 
@@ -20,5 +24,8 @@ message TimePolicy {
     string end_of_week = 3;
   }
 
-  map<string, DayHoursMap> time_policies = 1;
+message TimePolicy {
+    DayHoursMap work = 1 [json_name = "WORK"];
+    DayHoursMap personal = 2 [json_name = "PERSONAL"];
+    DayHoursMap meeting = 3 [json_name = "MEETING"];
 }

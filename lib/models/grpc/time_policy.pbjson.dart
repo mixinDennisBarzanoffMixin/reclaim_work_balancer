@@ -8,27 +8,29 @@
 import 'dart:core' as $core;
 import 'dart:convert' as $convert;
 import 'dart:typed_data' as $typed_data;
-@$core.Deprecated('Use timePolicyDescriptor instead')
-const TimePolicy$json = const {
-  '1': 'TimePolicy',
+@$core.Deprecated('Use mapFieldEntryDescriptor instead')
+const MapFieldEntry$json = const {
+  '1': 'MapFieldEntry',
   '2': const [
-    const {'1': 'time_policies', '3': 1, '4': 3, '5': 11, '6': '.time_policy.TimePolicy.TimePoliciesEntry', '10': 'timePolicies'},
+    const {'1': 'key', '3': 1, '4': 1, '5': 9, '10': 'key'},
+    const {'1': 'value', '3': 2, '4': 1, '5': 11, '6': '.time_policy.DayHoursMap', '10': 'value'},
   ],
-  '3': const [TimePolicy_DayHours$json, TimePolicy_DayHoursMap$json, TimePolicy_TimePoliciesEntry$json],
 };
 
-@$core.Deprecated('Use timePolicyDescriptor instead')
-const TimePolicy_DayHours$json = const {
+/// Descriptor for `MapFieldEntry`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List mapFieldEntryDescriptor = $convert.base64Decode('Cg1NYXBGaWVsZEVudHJ5EhAKA2tleRgBIAEoCVIDa2V5Ei4KBXZhbHVlGAIgASgLMhgudGltZV9wb2xpY3kuRGF5SG91cnNNYXBSBXZhbHVl');
+@$core.Deprecated('Use dayHoursDescriptor instead')
+const DayHours$json = const {
   '1': 'DayHours',
   '2': const [
-    const {'1': 'intervals', '3': 1, '4': 3, '5': 11, '6': '.time_policy.TimePolicy.DayHours.IntervalsEntry', '10': 'intervals'},
+    const {'1': 'intervals', '3': 1, '4': 3, '5': 11, '6': '.time_policy.DayHours.Interval', '10': 'intervals'},
     const {'1': 'end_of_day', '3': 2, '4': 1, '5': 9, '10': 'endOfDay'},
   ],
-  '3': const [TimePolicy_DayHours_Interval$json, TimePolicy_DayHours_IntervalsEntry$json],
+  '3': const [DayHours_Interval$json],
 };
 
-@$core.Deprecated('Use timePolicyDescriptor instead')
-const TimePolicy_DayHours_Interval$json = const {
+@$core.Deprecated('Use dayHoursDescriptor instead')
+const DayHours_Interval$json = const {
   '1': 'Interval',
   '2': const [
     const {'1': 'start', '3': 1, '4': 1, '5': 9, '10': 'start'},
@@ -37,46 +39,40 @@ const TimePolicy_DayHours_Interval$json = const {
   ],
 };
 
-@$core.Deprecated('Use timePolicyDescriptor instead')
-const TimePolicy_DayHours_IntervalsEntry$json = const {
-  '1': 'IntervalsEntry',
-  '2': const [
-    const {'1': 'key', '3': 1, '4': 1, '5': 9, '10': 'key'},
-    const {'1': 'value', '3': 2, '4': 1, '5': 11, '6': '.time_policy.TimePolicy.DayHours.Interval', '10': 'value'},
-  ],
-  '7': const {'7': true},
-};
-
-@$core.Deprecated('Use timePolicyDescriptor instead')
-const TimePolicy_DayHoursMap$json = const {
+/// Descriptor for `DayHours`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List dayHoursDescriptor = $convert.base64Decode('CghEYXlIb3VycxI8CglpbnRlcnZhbHMYASADKAsyHi50aW1lX3BvbGljeS5EYXlIb3Vycy5JbnRlcnZhbFIJaW50ZXJ2YWxzEhwKCmVuZF9vZl9kYXkYAiABKAlSCGVuZE9mRGF5Gk4KCEludGVydmFsEhQKBXN0YXJ0GAEgASgJUgVzdGFydBIQCgNlbmQYAiABKAlSA2VuZBIaCghkdXJhdGlvbhgDIAEoAVIIZHVyYXRpb24=');
+@$core.Deprecated('Use dayHoursMapDescriptor instead')
+const DayHoursMap$json = const {
   '1': 'DayHoursMap',
   '2': const [
-    const {'1': 'day_hours', '3': 1, '4': 3, '5': 11, '6': '.time_policy.TimePolicy.DayHoursMap.DayHoursEntry', '10': 'dayHours'},
+    const {'1': 'day_hours', '3': 1, '4': 3, '5': 11, '6': '.time_policy.DayHoursMap.DayHoursEntry', '10': 'dayHours'},
     const {'1': 'start_of_week', '3': 2, '4': 1, '5': 9, '10': 'startOfWeek'},
     const {'1': 'end_of_week', '3': 3, '4': 1, '5': 9, '10': 'endOfWeek'},
   ],
-  '3': const [TimePolicy_DayHoursMap_DayHoursEntry$json],
+  '3': const [DayHoursMap_DayHoursEntry$json],
 };
 
-@$core.Deprecated('Use timePolicyDescriptor instead')
-const TimePolicy_DayHoursMap_DayHoursEntry$json = const {
+@$core.Deprecated('Use dayHoursMapDescriptor instead')
+const DayHoursMap_DayHoursEntry$json = const {
   '1': 'DayHoursEntry',
   '2': const [
     const {'1': 'key', '3': 1, '4': 1, '5': 9, '10': 'key'},
-    const {'1': 'value', '3': 2, '4': 1, '5': 11, '6': '.time_policy.TimePolicy.DayHours', '10': 'value'},
+    const {'1': 'value', '3': 2, '4': 1, '5': 11, '6': '.time_policy.DayHours', '10': 'value'},
   ],
   '7': const {'7': true},
 };
 
+/// Descriptor for `DayHoursMap`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List dayHoursMapDescriptor = $convert.base64Decode('CgtEYXlIb3Vyc01hcBJDCglkYXlfaG91cnMYASADKAsyJi50aW1lX3BvbGljeS5EYXlIb3Vyc01hcC5EYXlIb3Vyc0VudHJ5UghkYXlIb3VycxIiCg1zdGFydF9vZl93ZWVrGAIgASgJUgtzdGFydE9mV2VlaxIeCgtlbmRfb2Zfd2VlaxgDIAEoCVIJZW5kT2ZXZWVrGlIKDURheUhvdXJzRW50cnkSEAoDa2V5GAEgASgJUgNrZXkSKwoFdmFsdWUYAiABKAsyFS50aW1lX3BvbGljeS5EYXlIb3Vyc1IFdmFsdWU6AjgB');
 @$core.Deprecated('Use timePolicyDescriptor instead')
-const TimePolicy_TimePoliciesEntry$json = const {
-  '1': 'TimePoliciesEntry',
+const TimePolicy$json = const {
+  '1': 'TimePolicy',
   '2': const [
-    const {'1': 'key', '3': 1, '4': 1, '5': 9, '10': 'key'},
-    const {'1': 'value', '3': 2, '4': 1, '5': 11, '6': '.time_policy.TimePolicy.DayHoursMap', '10': 'value'},
+    const {'1': 'work', '3': 1, '4': 1, '5': 11, '6': '.time_policy.DayHoursMap', '10': 'WORK'},
+    const {'1': 'personal', '3': 2, '4': 1, '5': 11, '6': '.time_policy.DayHoursMap', '10': 'PERSONAL'},
+    const {'1': 'meeting', '3': 3, '4': 1, '5': 11, '6': '.time_policy.DayHoursMap', '10': 'MEETING'},
   ],
-  '7': const {'7': true},
 };
 
 /// Descriptor for `TimePolicy`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List timePolicyDescriptor = $convert.base64Decode('CgpUaW1lUG9saWN5Ek4KDXRpbWVfcG9saWNpZXMYASADKAsyKS50aW1lX3BvbGljeS5UaW1lUG9saWN5LlRpbWVQb2xpY2llc0VudHJ5Ugx0aW1lUG9saWNpZXMasAIKCERheUhvdXJzEk0KCWludGVydmFscxgBIAMoCzIvLnRpbWVfcG9saWN5LlRpbWVQb2xpY3kuRGF5SG91cnMuSW50ZXJ2YWxzRW50cnlSCWludGVydmFscxIcCgplbmRfb2ZfZGF5GAIgASgJUghlbmRPZkRheRpOCghJbnRlcnZhbBIUCgVzdGFydBgBIAEoCVIFc3RhcnQSEAoDZW5kGAIgASgJUgNlbmQSGgoIZHVyYXRpb24YAyABKAFSCGR1cmF0aW9uGmcKDkludGVydmFsc0VudHJ5EhAKA2tleRgBIAEoCVIDa2V5Ej8KBXZhbHVlGAIgASgLMikudGltZV9wb2xpY3kuVGltZVBvbGljeS5EYXlIb3Vycy5JbnRlcnZhbFIFdmFsdWU6AjgBGoACCgtEYXlIb3Vyc01hcBJOCglkYXlfaG91cnMYASADKAsyMS50aW1lX3BvbGljeS5UaW1lUG9saWN5LkRheUhvdXJzTWFwLkRheUhvdXJzRW50cnlSCGRheUhvdXJzEiIKDXN0YXJ0X29mX3dlZWsYAiABKAlSC3N0YXJ0T2ZXZWVrEh4KC2VuZF9vZl93ZWVrGAMgASgJUgllbmRPZldlZWsaXQoNRGF5SG91cnNFbnRyeRIQCgNrZXkYASABKAlSA2tleRI2CgV2YWx1ZRgCIAEoCzIgLnRpbWVfcG9saWN5LlRpbWVQb2xpY3kuRGF5SG91cnNSBXZhbHVlOgI4ARpkChFUaW1lUG9saWNpZXNFbnRyeRIQCgNrZXkYASABKAlSA2tleRI5CgV2YWx1ZRgCIAEoCzIjLnRpbWVfcG9saWN5LlRpbWVQb2xpY3kuRGF5SG91cnNNYXBSBXZhbHVlOgI4AQ==');
+final $typed_data.Uint8List timePolicyDescriptor = $convert.base64Decode('CgpUaW1lUG9saWN5EiwKBHdvcmsYASABKAsyGC50aW1lX3BvbGljeS5EYXlIb3Vyc01hcFIEV09SSxI0CghwZXJzb25hbBgCIAEoCzIYLnRpbWVfcG9saWN5LkRheUhvdXJzTWFwUghQRVJTT05BTBIyCgdtZWV0aW5nGAMgASgLMhgudGltZV9wb2xpY3kuRGF5SG91cnNNYXBSB01FRVRJTkc=');

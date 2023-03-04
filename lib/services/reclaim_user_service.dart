@@ -15,13 +15,13 @@ class TimePolicyService {
       'Authorization': 'Bearer ${const String.fromEnvironment('RECLAIM_TOKEN')}',
     };
 
-    final response = await _client.patch(url, headers: headers);
+    final response = await _client.get(url, headers: headers);
     if (response.statusCode != 200) {
       throw 'Unexpected status code ${response.statusCode}';
     }
 
-    final data = jsonDecode(response.body)['features']['timePolicies'];
-    final timePolicy = TimePolicy()..mergeFromProto3Json(data);
-    return timePolicy;
+    final Map<String, dynamic> data = jsonDecode(response.body)['features']['timePolicies'];
+    return TimePolicy()..mergeFromProto3Json(data);
   }
 }
+
