@@ -5,7 +5,8 @@ import 'package:http/http.dart' as http;
 
 class ReclaimTaskService {
   final http.Client client;
-  ReclaimTaskService(this.client);
+  final String token;
+  ReclaimTaskService(this.client, this.token);
   Future<List<Task>> fetchAllTasks({
     bool instances = false,
   }) async {
@@ -19,10 +20,9 @@ class ReclaimTaskService {
       },
     );
 
-    print(const String.fromEnvironment('RECLAIM_TOKEN'));
     final headers = {
       'Accept': 'application/json',
-      'Authorization': 'Bearer ${const String.fromEnvironment('RECLAIM_TOKEN')}'
+      'Authorization': 'Bearer $token'
     };
 
     final response = await client.get(url, headers: headers);
@@ -47,7 +47,7 @@ class ReclaimTaskService {
 
     final headers = {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer ${const String.fromEnvironment('RECLAIM_TOKEN')}'
+      'Authorization': 'Bearer $token',
     };
 
     final body = jsonEncode(task.toProto3Json());
@@ -67,7 +67,7 @@ class ReclaimTaskService {
 
     final headers = {
       'Accept': 'application/json',
-      'Authorization': 'Bearer ${const String.fromEnvironment('RECLAIM_TOKEN')}',
+      'Authorization': 'Bearer $token',
       'Content-Type': 'application/json',
     };
 
@@ -93,7 +93,7 @@ class ReclaimTaskService {
     
     final headers = {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer ${const String.fromEnvironment('RECLAIM_TOKEN')}}',
+      'Authorization': 'Bearer $token',
     };
     
     final body = jsonEncode({

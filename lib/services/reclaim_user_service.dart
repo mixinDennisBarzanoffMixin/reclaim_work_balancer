@@ -5,14 +5,15 @@ import '../models/grpc/time_policy.pb.dart';
 class TimePolicyService {
   static const _baseUrl = 'https://api.app.reclaim.ai';
   final http.Client _client;
+  final String token;
 
-  TimePolicyService(this._client);
+  TimePolicyService(this._client, this.token);
 
   Future<TimePolicy> getCurrentUserTimePolicy() async {
     final url = Uri.parse('$_baseUrl/api/users/current');
     final headers = {
       'Accept': 'application/json',
-      'Authorization': 'Bearer ${const String.fromEnvironment('RECLAIM_TOKEN')}',
+      'Authorization': 'Bearer $token',
     };
 
     final response = await _client.get(url, headers: headers);
