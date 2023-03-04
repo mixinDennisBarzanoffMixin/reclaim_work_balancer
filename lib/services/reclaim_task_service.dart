@@ -22,7 +22,10 @@ class ReclaimTaskService {
 
     final headers = {
       'Accept': 'application/json',
-      'Authorization': 'Bearer $token'
+      'Authorization': 'Bearer $token',
+      'Access-Control-Allow-Origin': 'https://mixindennisbarzanoffmixin.github.io',
+      'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
     };
 
     final response = await client.get(url, headers: headers);
@@ -48,6 +51,9 @@ class ReclaimTaskService {
     final headers = {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $token',
+      'Access-Control-Allow-Origin': 'https://mixindennisbarzanoffmixin.github.io',
+      'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
     };
 
     final body = jsonEncode(task.toProto3Json());
@@ -69,6 +75,9 @@ class ReclaimTaskService {
       'Accept': 'application/json',
       'Authorization': 'Bearer $token',
       'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': 'https://mixindennisbarzanoffmixin.github.io',
+      'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
     };
 
     final response = await client.post(
@@ -94,6 +103,9 @@ class ReclaimTaskService {
     final headers = {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $token',
+      'Access-Control-Allow-Origin': 'https://mixindennisbarzanoffmixin.github.io',
+      'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
     };
     
     final body = jsonEncode({

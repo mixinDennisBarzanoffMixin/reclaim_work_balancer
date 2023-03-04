@@ -14,6 +14,9 @@ class TimePolicyService {
     final headers = {
       'Accept': 'application/json',
       'Authorization': 'Bearer $token',
+      'Access-Control-Allow-Origin': 'https://mixindennisbarzanoffmixin.github.io',
+      'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
     };
 
     final response = await _client.get(url, headers: headers);
