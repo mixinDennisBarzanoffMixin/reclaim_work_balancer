@@ -5,16 +5,19 @@ import 'package:protobuf/protobuf.dart';
 
 import 'models/grpc/google/protobuf/timestamp.pb.dart';
 import 'models/grpc/reclaim_task.pb.dart';
+import 'models/grpc/time_policy.pb.dart';
 
 class BudgetConfig {
   final List<bool Function(Task)> budgetMatcher;
   final int budgetPerDayInChunks;
   final DateTime startingDay;
+  final TimePolicy policy;
 
   const BudgetConfig({
     required this.budgetMatcher,
     required this.budgetPerDayInChunks,
     required this.startingDay,
+    required this.policy,
   });
 }
 
@@ -76,7 +79,28 @@ class TimeBudgeter {
   }
 
   DateTime eveningTime(DateTime date) {
-    return DateTime(date.year, date.month, date.day, 22, 0, 0);
+    return DateTime(date.year, date.month, date.day, 21, 0, 0);
+  }
+
+  List<int> _weekDays(TimePolicy_DayHoursMap map) {
+    return [
+      if (map.dayHours.containsKey("MONDAY")) 1,
+      if (map.dayHours.containsKey("TUESDAY")) 2,
+      if (map.dayHours.containsKey("WEDNESDAY")) 3,
+      if (map.dayHours.containsKey("THURSDAY")) 4,
+      if (map.dayHours.containsKey("FRIDAY")) 5,
+      if (map.dayHours.containsKey("SATURDAY")) 6,
+      if (map.dayHours.containsKey("SUNDAY")) 7,
+    ];
+  }
+
+  DateTime findNextAvailableDate(DateTime date) {
+    final weekDays = _weekDays(config.policy.work);
+    if (weekDays.isEmpty) return date;
+    while (!weekDays.contains(date.weekday)) {
+      date = date.add(const Duration(days: 1));
+    }
+    return date;
   }
 
   /// This function takes a time budget config and creates and updates the taskToSort list to fit the budget.
@@ -88,15 +112,22 @@ class TimeBudgeter {
     var currentDate = config.startingDay;
     // loop through the tasks in the budget
     var currentDayUsedUpBudgetChunks = 0;
+    final weekDays = _weekDays(config.policy.work);
+    if (weekDays.isEmpty) return [];
     for (var i = 0; i < tasks.length; i++) {
       // for every task determine if it's in the budget
       var task = tasks[i];
+      // loop until you find a currentDate that is specified in the config budget
+      
       if (currentDayUsedUpBudgetChunks == config.budgetPerDayInChunks) {
         // if the current day is used up, reset the current day used up budget chunks
         currentDayUsedUpBudgetChunks = 0;
         // and set the current date to the next day
         currentDate = currentDate.add(const Duration(days: 1));
       }
+
+      currentDate = findNextAvailableDate(currentDate);
+      print("Weekday: ${currentDate.weekday}");
       // reset the task just in case to the current date
       task = task.rebuild((task) {
         task
@@ -123,14 +154,14 @@ class TimeBudgeter {
     return tasks;
   }
 
-  Task createPlaceholderTask(Timestamp date, int timeChunksRequired) {
-    return Task(
-      id: UniqueKey().hashCode,
-      title: 'Work placeholder',
-      eventCategory: EventCategory.WORK,
-      status: TaskStatus.NEW,
-      timeChunksRequired: timeChunksRequired,
-      due: date,
-    );
-  }
+  // Task createPlaceholderTask(Timestamp date, int timeChunksRequired) {
+  //   return Task(
+  //     id: UniqueKey().hashCode,
+  //     title: 'Work placeholder',
+  //     eventCategory: EventCategory.WORK,
+  //     status: TaskStatus.NEW,
+  //     timeChunksRequired: timeChunksRequired,
+  //     due: date,
+  //   );
+  // }
 }

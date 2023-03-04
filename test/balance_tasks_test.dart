@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:protobuf/protobuf.dart';
 import 'package:reclaim_work_balancer/models/grpc/google/protobuf/timestamp.pb.dart';
 import 'package:reclaim_work_balancer/models/grpc/reclaim_task.pb.dart';
+import 'package:reclaim_work_balancer/models/grpc/time_policy.pb.dart';
 import 'package:reclaim_work_balancer/time_budgeter.dart';
 import 'package:reclaim_work_balancer/util/time_conversion.dart';
 
@@ -15,7 +16,29 @@ void main() {
           budgetMatcher: 
             [(Task task) => task.eventCategory == EventCategory.WORK], 
             budgetPerDayInChunks: 4.hours, 
-            startingDay: DateTime(2023, 11, 12),
+            startingDay: DateTime(2023, 11, 12), policy: TimePolicy(work: TimePolicy_DayHoursMap(dayHours: {
+              "MONDAY": TimePolicy_DayHours(intervals: [
+                TimePolicy_DayHours_Interval(start: "06:00:00", end: "21:00:00", duration: 21 - 6),
+              ]),
+              "TUESDAY": TimePolicy_DayHours(intervals: [
+                TimePolicy_DayHours_Interval(start: "06:00:00", end: "21:00:00", duration: 21 - 6),
+              ]),
+              "WEDNESDAY": TimePolicy_DayHours(intervals: [
+                TimePolicy_DayHours_Interval(start: "06:00:00", end: "21:00:00", duration: 21 - 6),
+              ]),
+              "THURSDAY": TimePolicy_DayHours(intervals: [
+                TimePolicy_DayHours_Interval(start: "06:00:00", end: "21:00:00", duration: 21 - 6),
+              ]),
+              "FRIDAY": TimePolicy_DayHours(intervals: [
+                TimePolicy_DayHours_Interval(start: "06:00:00", end: "21:00:00", duration: 21 - 6),
+              ]),
+              "SATURDAY": TimePolicy_DayHours(intervals: [
+                TimePolicy_DayHours_Interval(start: "06:00:00", end: "21:00:00", duration: 21 - 6),
+              ]),
+              "SUNDAY": TimePolicy_DayHours(intervals: [
+                TimePolicy_DayHours_Interval(start: "06:00:00", end: "21:00:00", duration: 21 - 6),
+              ]),
+            })),
         ),
       );
     });
@@ -128,7 +151,7 @@ void main() {
             ..notes = 'This is an example task'
             ..status = TaskStatus.NEW
             ..snoozeUntil = Timestamp.fromDateTime(DateTime(2023, 11, 12, 6))
-            ..due = Timestamp.fromDateTime(DateTime(2023, 11, 12, 22))
+            ..due = Timestamp.fromDateTime(DateTime(2023, 11, 12, 21))
             ..eventCategory = EventCategory.WORK
             ..timeChunksRequired = 4.hours
             ..timeChunksRemaining = 4.hours
@@ -139,7 +162,7 @@ void main() {
             ..notes = 'This is an example task'
             ..status = TaskStatus.NEW
             ..snoozeUntil = Timestamp.fromDateTime(DateTime(2023, 11, 13, 6))
-            ..due = Timestamp.fromDateTime(DateTime(2023, 11, 13, 22))
+            ..due = Timestamp.fromDateTime(DateTime(2023, 11, 13, 21))
             ..eventCategory = EventCategory.WORK
             ..timeChunksRequired = 1.hours
             ..timeChunksRemaining = 1.hours
@@ -150,7 +173,7 @@ void main() {
             ..title = 'Work placeholder'
             ..status = TaskStatus.NEW
             ..snoozeUntil = Timestamp.fromDateTime(DateTime(2023, 11, 13, 6))
-            ..due = Timestamp.fromDateTime(DateTime(2023, 11, 13, 22))
+            ..due = Timestamp.fromDateTime(DateTime(2023, 11, 13, 21))
             ..eventCategory = EventCategory.WORK
             ..timeChunksRequired = 3.hours
             ..timeChunksRemaining = 3.hours
@@ -178,7 +201,7 @@ void main() {
           ..notes = 'This is an example task'
           ..status = TaskStatus.NEW
           ..snoozeUntil = Timestamp.fromDateTime(DateTime(2023, 11, 12, 6))
-          ..due = Timestamp.fromDateTime(DateTime(2023, 11, 12, 22))
+          ..due = Timestamp.fromDateTime(DateTime(2023, 11, 12, 21))
           ..eventCategory = EventCategory.WORK
           ..timeChunksRequired = 1.hours 
           ..freeze(),
@@ -218,14 +241,14 @@ void main() {
             task.timeChunksRemaining = 4.hours;
             task.timeChunksSpent = 0.hours;
             task.snoozeUntil = Timestamp.fromDateTime(DateTime(2023, 11, 12, 6));
-            task.due = Timestamp.fromDateTime(DateTime(2023, 11, 12, 22));
+            task.due = Timestamp.fromDateTime(DateTime(2023, 11, 12, 21));
           }),
           workTask.rebuild((task) {
             task.clearId();
             task.timeChunksRequired = 1.hours;
             task.timeChunksRemaining = 1.hours;
             task.timeChunksSpent = 0.hours;
-            task.due = Timestamp.fromDateTime(DateTime(2023, 11, 13, 22));
+            task.due = Timestamp.fromDateTime(DateTime(2023, 11, 13, 21));
             task.snoozeUntil = Timestamp.fromDateTime(DateTime(2023, 11, 13, 6));
           }),
         // [personalTask],
@@ -267,14 +290,14 @@ void main() {
             task.timeChunksRemaining = 4.hours;
             task.timeChunksSpent = 0.hours;
             task.snoozeUntil = Timestamp.fromDateTime(DateTime(2023, 11, 12, 6));
-            task.due = Timestamp.fromDateTime(DateTime(2023, 11, 12, 22));
+            task.due = Timestamp.fromDateTime(DateTime(2023, 11, 12, 21));
           }),
           workTask1.rebuild((task) {
             task.clearId();
             task.timeChunksRequired = 4.hours;
             task.timeChunksRemaining = 4.hours;
             task.timeChunksSpent = 0.hours;
-            task.due = Timestamp.fromDateTime(DateTime(2023, 11, 13, 22));
+            task.due = Timestamp.fromDateTime(DateTime(2023, 11, 13, 21));
             task.snoozeUntil = Timestamp.fromDateTime(DateTime(2023, 11, 13, 6));
           }),
           workTask1.rebuild((task) {
@@ -282,18 +305,97 @@ void main() {
             task.timeChunksRequired = 2.hours;
             task.timeChunksRemaining = 2.hours;
             task.timeChunksSpent = 0.hours;
-            task.due = Timestamp.fromDateTime(DateTime(2023, 11, 14, 22));
+            task.due = Timestamp.fromDateTime(DateTime(2023, 11, 14, 21));
             task.snoozeUntil = Timestamp.fromDateTime(DateTime(2023, 11, 14, 6));
           }),
           workTask2.rebuild((task) {
             task.timeChunksRequired = 2.hours;
             task.timeChunksRemaining = 2.hours;
             task.timeChunksSpent = 0.hours;
-            task.due = Timestamp.fromDateTime(DateTime(2023, 11, 14, 22));
+            task.due = Timestamp.fromDateTime(DateTime(2023, 11, 14, 21));
             task.snoozeUntil = Timestamp.fromDateTime(DateTime(2023, 11, 14, 6));
           }),
         ]));
         expect(splitTasks.length, 1);
     });
   });
+  group('Test no saturday behavior', () {
+    late TimeBudgeter budgeter;
+    print(DateTime(2023, 11, 12).weekday);
+    
+    setUp(() {
+      budgeter = TimeBudgeter(
+        BudgetConfig(
+          budgetMatcher: 
+            [(Task task) => task.eventCategory == EventCategory.WORK], 
+            budgetPerDayInChunks: 4.hours, 
+            startingDay: DateTime(2023, 11, 10), policy: TimePolicy(work: TimePolicy_DayHoursMap(dayHours: {
+              "MONDAY": TimePolicy_DayHours(intervals: [
+                TimePolicy_DayHours_Interval(start: "06:00:00", end: "21:00:00", duration: 21 - 6),
+              ]),
+              "TUESDAY": TimePolicy_DayHours(intervals: [
+                TimePolicy_DayHours_Interval(start: "06:00:00", end: "21:00:00", duration: 21 - 6),
+              ]),
+              "WEDNESDAY": TimePolicy_DayHours(intervals: [
+                TimePolicy_DayHours_Interval(start: "06:00:00", end: "21:00:00", duration: 21 - 6),
+              ]),
+              "THURSDAY": TimePolicy_DayHours(intervals: [
+                TimePolicy_DayHours_Interval(start: "06:00:00", end: "21:00:00", duration: 21 - 6),
+              ]),
+              "FRIDAY": TimePolicy_DayHours(intervals: [
+                TimePolicy_DayHours_Interval(start: "06:00:00", end: "21:00:00", duration: 21 - 6),
+              ]),
+              // NO SATURDAY
+              "SUNDAY": TimePolicy_DayHours(intervals: [
+                TimePolicy_DayHours_Interval(start: "06:00:00", end: "21:00:00", duration: 21 - 6),
+              ]),
+            })),
+        ),
+      );
+    });
+    test('Saturday is skipped when distributing tasks', () {
+      final task = Task()
+        ..id = 123
+        ..title = 'Example Task'
+        ..notes = 'This is an example task'
+        ..status = TaskStatus.NEW
+        ..due = Timestamp.fromDateTime(DateTime(2023, 11, 10))
+        ..eventCategory = EventCategory.WORK
+        ..timeChunksRequired = 10.hours
+        ..timeChunksRemaining = 10.hours
+        ..timeChunksSpent = 0.hours
+        ..freeze();
+
+      final tasks = [task];
+      final splitTasks = budgeter.splitByBudgets(tasks);
+
+      expect(splitTasks[0], orderedEquals([
+        task.rebuild((task) {
+          task.timeChunksRequired = 4.hours;
+          task.timeChunksRemaining = 4.hours;
+          task.timeChunksSpent = 0.hours;
+          task.snoozeUntil = Timestamp.fromDateTime(DateTime(2023, 11, 10, 6));
+          task.due = Timestamp.fromDateTime(DateTime(2023, 11, 10, 21));
+        }),
+        task.rebuild((task) {
+          task.clearId();
+          task.timeChunksRequired = 4.hours;
+          task.timeChunksRemaining = 4.hours;
+          task.timeChunksSpent = 0.hours;
+          task.due = Timestamp.fromDateTime(DateTime(2023, 11, 12, 21));
+          task.snoozeUntil = Timestamp.fromDateTime(DateTime(2023, 11, 12, 6));
+        }),
+        task.rebuild((task) {
+          task.clearId();
+          task.timeChunksRequired = 2.hours;
+          task.timeChunksRemaining = 2.hours;
+          task.timeChunksSpent = 0.hours;
+          task.due = Timestamp.fromDateTime(DateTime(2023, 11, 13, 21));
+          task.snoozeUntil = Timestamp.fromDateTime(DateTime(2023, 11, 13, 6));
+        }),
+      ]));
+      expect(splitTasks.length, 1);
+    });
+  });
+
 }

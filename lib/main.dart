@@ -8,6 +8,7 @@ import 'package:reclaim_work_balancer/time_budgeter.dart';
 import 'package:reclaim_work_balancer/util/time_conversion.dart';
 
 import 'models/grpc/reclaim_task.pb.dart';
+import 'models/grpc/time_policy.pb.dart';
 import 'services/reclaim_user_service.dart';
 
 void main() {
@@ -27,13 +28,6 @@ class _MyAppState extends State<MyApp> {
   late ReclaimTaskService service;
   var tasks = <Task>[];
   late TimePolicyService timePolicyService;
-  final timeBudgeter = TimeBudgeter(
-    BudgetConfig(
-      budgetMatcher: [(Task task) => task.eventCategory == EventCategory.WORK],
-      budgetPerDayInChunks: 4.hours,
-      startingDay: DateTime.now(),
-    ),
-  );
 
   @override
   void initState() {
@@ -67,6 +61,15 @@ class _MyAppState extends State<MyApp> {
                   // if it does, update the task
                   // if not, create a new task
                   // then fetch all tasks again
+                  final TimePolicy policy =  await timePolicyService.getCurrentUserTimePolicy();
+                  final timeBudgeter = TimeBudgeter(
+                    BudgetConfig(
+                      budgetMatcher: [(Task task) => task.eventCategory == EventCategory.WORK],
+                      budgetPerDayInChunks: 4.hours,
+                      startingDay: DateTime.now(),
+                      policy: policy,
+                    ),
+                  );
 
                   final pouches = timeBudgeter.splitByBudgets(tasks);
                   for (final pouch in pouches) {

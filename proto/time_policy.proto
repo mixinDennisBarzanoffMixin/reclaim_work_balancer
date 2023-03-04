@@ -3,6 +3,7 @@ syntax = "proto3";
 package time_policy;
 
 
+message TimePolicy {
   message MapFieldEntry {
     string key = 1;
     DayHoursMap value = 2;
@@ -23,8 +24,6 @@ package time_policy;
     string start_of_week = 2;
     string end_of_week = 3;
   }
-
-message TimePolicy {
     DayHoursMap work = 1 [json_name = "WORK"];
     DayHoursMap personal = 2 [json_name = "PERSONAL"];
     DayHoursMap meeting = 3 [json_name = "MEETING"];
