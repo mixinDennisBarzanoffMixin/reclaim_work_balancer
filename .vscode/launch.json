@@ -6,7 +6,7 @@
             "request": "launch",
             "program": "lib/main.dart",
             "args": [
-                "--dart-define", "TOKEN=c59e0b11-9cc8-4e03-bb50-ba55d0e71fd1"
+                "--dart-define", "RECLAIM_TOKEN=c59e0b11-9cc8-4e03-bb50-ba55d0e71fd1"
             ]
         },
 

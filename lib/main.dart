@@ -8,6 +8,7 @@ import 'package:reclaim_work_balancer/time_budgeter.dart';
 import 'package:reclaim_work_balancer/util/time_conversion.dart';
 
 import 'models/grpc/reclaim_task.pb.dart';
+import 'services/reclaim_user_service.dart';
 
 void main() {
   runApp(const MyApp());
@@ -25,6 +26,7 @@ class _MyAppState extends State<MyApp> {
   late http.Client client = http.Client();
   late ReclaimTaskService service;
   var tasks = <Task>[];
+  late TimePolicyService timePolicyService;
   final timeBudgeter = TimeBudgeter(
     BudgetConfig(
       budgetMatcher: [(Task task) => task.eventCategory == EventCategory.WORK],
@@ -37,6 +39,10 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     service = ReclaimTaskService(client);
+    timePolicyService = TimePolicyService(client);
+    timePolicyService.getCurrentUserTimePolicy().then((policty) {
+      print(policty);
+    });
     refresh();
   }
   Future<void> refresh() async {
@@ -72,9 +78,15 @@ class _MyAppState extends State<MyApp> {
                         final Task newTask = await service.createTask(task);
                         pouch[i] = newTask;
                       }
-                      if (i != 0) {
-                        await service.reindex(pouch[i], "after", pouch[i - 1].id);
+
+                      if (i > 0) {
+                        try {
+                          await service.reindex(pouch[i], "after", pouch[i - 1].id);
+                        } catch (e) {
+                          print(e);
+                        }
                       }
+                        // if pouch[i] isn't already after pouch[i - 1]
                     }
                   }
                   await refresh();

@@ -19,9 +19,10 @@ class ReclaimTaskService {
       },
     );
 
+    print(const String.fromEnvironment('RECLAIM_TOKEN'));
     final headers = {
       'Accept': 'application/json',
-      'Authorization': 'Bearer c59e0b11-9cc8-4e03-bb50-ba55d0e71fd1'
+      'Authorization': 'Bearer ${const String.fromEnvironment('RECLAIM_TOKEN')}'
     };
 
     final response = await client.get(url, headers: headers);
@@ -46,7 +47,7 @@ class ReclaimTaskService {
 
     final headers = {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer c59e0b11-9cc8-4e03-bb50-ba55d0e71fd1'
+      'Authorization': 'Bearer ${const String.fromEnvironment('RECLAIM_TOKEN')}'
     };
 
     final body = jsonEncode(task.toProto3Json());
@@ -66,7 +67,7 @@ class ReclaimTaskService {
 
     final headers = {
       'Accept': 'application/json',
-      'Authorization': 'Bearer c59e0b11-9cc8-4e03-bb50-ba55d0e71fd1',
+      'Authorization': 'Bearer ${const String.fromEnvironment('RECLAIM_TOKEN')}',
       'Content-Type': 'application/json',
     };
 
@@ -92,7 +93,7 @@ class ReclaimTaskService {
     
     final headers = {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer c59e0b11-9cc8-4e03-bb50-ba55d0e71fd1',
+      'Authorization': 'Bearer ${const String.fromEnvironment('RECLAIM_TOKEN')}}',
     };
     
     final body = jsonEncode({

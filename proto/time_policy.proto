@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package time_policy;
+
+message TimePolicy {
+  message DayHours {
+    message Interval {
+      string start = 1;
+      string end = 2;
+      double duration = 3;
+    }
+
+    map<string, Interval> intervals = 1;
+    string end_of_day = 2;
+  }
+
+  message DayHoursMap {
+    map<string, DayHours> day_hours = 1;
+    string start_of_week = 2;
+    string end_of_week = 3;
+  }
+
+  map<string, DayHoursMap> time_policies = 1;
+}
