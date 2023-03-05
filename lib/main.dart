@@ -4,10 +4,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:reclaim_work_balancer/task_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:shared_preferences_web/shared_preferences_web.dart' as web;
+// import 'package:shared_preferences_web/shared_preferences_web.dart' as web;
 
 void main() {
-  if (kIsWeb) web.SharedPreferencesPlugin.registerWith(null);
+  // if (kIsWeb) web.SharedPreferencesPlugin.registerWith(null);
 
   runApp(MyApp());
 }
