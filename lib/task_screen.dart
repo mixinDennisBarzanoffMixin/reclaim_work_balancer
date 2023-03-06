@@ -7,6 +7,7 @@ import 'package:reclaim_work_balancer/services/reclaim_task_service.dart';
 import 'package:reclaim_work_balancer/time_budgeter.dart';
 import 'package:reclaim_work_balancer/util/time_conversion.dart';
 
+import 'command.dart';
 import 'models/grpc/reclaim_task.pb.dart';
 import 'models/grpc/time_policy.pb.dart';
 import 'services/reclaim_user_service.dart';
@@ -68,27 +69,34 @@ class _TaskScreenState extends State<TaskScreen> {
                     ),
                   );
 
-                  final pouches = timeBudgeter.splitByBudgets(tasks);
-                  for (final pouch in pouches) {
-                    for (int i = 0; i < pouch.length; i++) {
-                      final task = pouch[i];
-                      if (task.hasId()) {
-                        await service.updateTask(task);
-                      } else {
-                        final Task newTask = await service.createTask(task);
-                        pouch[i] = newTask;
-                      }
-
-                      if (i > 0) {
-                        try {
-                          await service.reindex(pouch[i], "after", pouch[i - 1].id);
-                        } catch (e) {
-                          print(e);
-                        }
-                      }
-                        // if pouch[i] isn't already after pouch[i - 1]
+                  final commands = timeBudgeter.splitByBudgets(tasks);
+                  for (int i = 0; i < commands.length; i++) {
+                    var command = commands[i];
+                    await command.operation(service);
+                    if (commands[i - 1] is! DeleteCommand) {
+                      // we don't wanna move something after something that doesn't exist anymore
+                      await service.reindex(commands[i].task, "after", commands[i - 1].task.id);
                     }
                   }
+                  // for (final pouch in pouches) {
+                  //   for (int i = 0; i < pouch.length; i++) {
+                  //     final task = pouch[i];
+                  //     if (task.hasId()) {
+                  //       await service.updateTask(task);
+                  //     } else {
+                  //       final Task newTask = await service.createTask(task);
+                  //       pouch[i] = newTask;
+                  //     }
+
+                  //     if (i > 0) {
+                  //       try {
+                        // } catch (e) {
+                          // print(e);
+                        // }
+                      // }
+                        // if pouch[i] isn't already after pouch[i - 1]
+                    // }
+                  // }
                   await refresh();
                 },
           child: const Icon(Icons.refresh),

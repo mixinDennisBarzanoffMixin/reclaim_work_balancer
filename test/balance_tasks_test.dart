@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:protobuf/protobuf.dart';
+import 'package:reclaim_work_balancer/command.dart';
 import 'package:reclaim_work_balancer/models/grpc/google/protobuf/timestamp.pb.dart';
 import 'package:reclaim_work_balancer/models/grpc/reclaim_task.pb.dart';
 import 'package:reclaim_work_balancer/models/grpc/time_policy.pb.dart';
@@ -144,41 +145,47 @@ void main() {
         ..freeze();
 
        final split = budgeter.splitByBudgets([task, placeholder]);
-       expect(split[0], unorderedEquals([
-          Task()
-            ..id = 123
-            ..title = 'Example Task'
-            ..notes = 'This is an example task'
-            ..status = TaskStatus.NEW
-            ..snoozeUntil = Timestamp.fromDateTime(DateTime(2023, 11, 12, 6))
-            ..due = Timestamp.fromDateTime(DateTime(2023, 11, 12, 21))
-            ..eventCategory = EventCategory.WORK
-            ..timeChunksRequired = 4.hours
-            ..timeChunksRemaining = 4.hours
-            ..timeChunksSpent = 0.hours
-            ..freeze(),
-          Task()
-            ..title = 'Example Task'
-            ..notes = 'This is an example task'
-            ..status = TaskStatus.NEW
-            ..snoozeUntil = Timestamp.fromDateTime(DateTime(2023, 11, 13, 6))
-            ..due = Timestamp.fromDateTime(DateTime(2023, 11, 13, 21))
-            ..eventCategory = EventCategory.WORK
-            ..timeChunksRequired = 1.hours
-            ..timeChunksRemaining = 1.hours
-            ..timeChunksSpent = 0.hours
-            ..freeze(),
-          Task()
-            ..id = 124
-            ..title = 'Work placeholder'
-            ..status = TaskStatus.NEW
-            ..snoozeUntil = Timestamp.fromDateTime(DateTime(2023, 11, 13, 6))
-            ..due = Timestamp.fromDateTime(DateTime(2023, 11, 13, 21))
-            ..eventCategory = EventCategory.WORK
-            ..timeChunksRequired = 3.hours
-            ..timeChunksRemaining = 3.hours
-            ..timeChunksSpent = 0.hours
-            ..freeze(),
+       expect(split, unorderedEquals([
+          EditCommand(
+            Task()
+              ..id = 123
+              ..title = 'Example Task'
+              ..notes = 'This is an example task'
+              ..status = TaskStatus.NEW
+              ..snoozeUntil = Timestamp.fromDateTime(DateTime(2023, 11, 12, 6))
+              ..due = Timestamp.fromDateTime(DateTime(2023, 11, 12, 21))
+              ..eventCategory = EventCategory.WORK
+              ..timeChunksRequired = 4.hours
+              ..timeChunksRemaining = 4.hours
+              ..timeChunksSpent = 0.hours
+              ..freeze(),
+          ),
+          CreateCommand(
+            Task()
+              ..title = 'Example Task'
+              ..notes = 'This is an example task'
+              ..status = TaskStatus.NEW
+              ..snoozeUntil = Timestamp.fromDateTime(DateTime(2023, 11, 13, 6))
+              ..due = Timestamp.fromDateTime(DateTime(2023, 11, 13, 21))
+              ..eventCategory = EventCategory.WORK
+              ..timeChunksRequired = 1.hours
+              ..timeChunksRemaining = 1.hours
+              ..timeChunksSpent = 0.hours
+              ..freeze(),
+          ),
+          EditCommand(
+            Task()
+              ..id = 124
+              ..title = 'Work placeholder'
+              ..status = TaskStatus.NEW
+              ..snoozeUntil = Timestamp.fromDateTime(DateTime(2023, 11, 13, 6))
+              ..due = Timestamp.fromDateTime(DateTime(2023, 11, 13, 21))
+              ..eventCategory = EventCategory.WORK
+              ..timeChunksRequired = 3.hours
+              ..timeChunksRemaining = 3.hours
+              ..timeChunksSpent = 0.hours
+              ..freeze(),
+          ),
         ]),
        );
     });
@@ -194,17 +201,19 @@ void main() {
         ..freeze();
           
       final split = budgeter.splitByBudgets([task]);
-      expect(split[0], unorderedEquals([
-        Task()
-          ..id = 123
-          ..title = 'Example Task'
-          ..notes = 'This is an example task'
-          ..status = TaskStatus.NEW
-          ..snoozeUntil = Timestamp.fromDateTime(DateTime(2023, 11, 12, 6))
-          ..due = Timestamp.fromDateTime(DateTime(2023, 11, 12, 21))
-          ..eventCategory = EventCategory.WORK
-          ..timeChunksRequired = 1.hours 
-          ..freeze(),
+      expect(split, unorderedEquals([
+        EditCommand(
+          Task()
+            ..id = 123
+            ..title = 'Example Task'
+            ..notes = 'This is an example task'
+            ..status = TaskStatus.NEW
+            ..snoozeUntil = Timestamp.fromDateTime(DateTime(2023, 11, 12, 6))
+            ..due = Timestamp.fromDateTime(DateTime(2023, 11, 12, 21))
+            ..eventCategory = EventCategory.WORK
+            ..timeChunksRequired = 1.hours 
+            ..freeze(),
+        ),
       ]));
     });
     test('Test only work tasks are modified', () {
@@ -235,25 +244,28 @@ void main() {
       final tasks = [workTask, personalTask];
       final splitTasks = budgeter.splitByBudgets(tasks);
       
-      expect(splitTasks[0], orderedEquals([
-          workTask.rebuild((task) {
-            task.timeChunksRequired = 4.hours;
-            task.timeChunksRemaining = 4.hours;
-            task.timeChunksSpent = 0.hours;
-            task.snoozeUntil = Timestamp.fromDateTime(DateTime(2023, 11, 12, 6));
-            task.due = Timestamp.fromDateTime(DateTime(2023, 11, 12, 21));
-          }),
-          workTask.rebuild((task) {
-            task.clearId();
-            task.timeChunksRequired = 1.hours;
-            task.timeChunksRemaining = 1.hours;
-            task.timeChunksSpent = 0.hours;
-            task.due = Timestamp.fromDateTime(DateTime(2023, 11, 13, 21));
-            task.snoozeUntil = Timestamp.fromDateTime(DateTime(2023, 11, 13, 6));
-          }),
+      expect(splitTasks, orderedEquals([
+          EditCommand(
+            workTask.rebuild((task) {
+              task.timeChunksRequired = 4.hours;
+              task.timeChunksRemaining = 4.hours;
+              task.timeChunksSpent = 0.hours;
+              task.snoozeUntil = Timestamp.fromDateTime(DateTime(2023, 11, 12, 6));
+              task.due = Timestamp.fromDateTime(DateTime(2023, 11, 12, 21));
+            }),
+          ),
+          CreateCommand(
+            workTask.rebuild((task) {
+              task.clearId();
+              task.timeChunksRequired = 1.hours;
+              task.timeChunksRemaining = 1.hours;
+              task.timeChunksSpent = 0.hours;
+              task.due = Timestamp.fromDateTime(DateTime(2023, 11, 13, 21));
+              task.snoozeUntil = Timestamp.fromDateTime(DateTime(2023, 11, 13, 6));
+            }),
+          ),
         // [personalTask],
       ]));
-      expect(splitTasks.length, 1);
     });
 
     test('Test updating work tasks and creating new ones', () {
@@ -284,7 +296,8 @@ void main() {
       final tasks = [workTask1, workTask2];
       final splitTasks = budgeter.splitByBudgets(tasks);
 
-      expect(splitTasks[0], orderedEquals([
+      expect(splitTasks, orderedEquals([
+        EditCommand(
           workTask1.rebuild((task) {
             task.timeChunksRequired = 4.hours;
             task.timeChunksRemaining = 4.hours;
@@ -292,6 +305,8 @@ void main() {
             task.snoozeUntil = Timestamp.fromDateTime(DateTime(2023, 11, 12, 6));
             task.due = Timestamp.fromDateTime(DateTime(2023, 11, 12, 21));
           }),
+        ),
+        CreateCommand(
           workTask1.rebuild((task) {
             task.clearId();
             task.timeChunksRequired = 4.hours;
@@ -300,6 +315,8 @@ void main() {
             task.due = Timestamp.fromDateTime(DateTime(2023, 11, 13, 21));
             task.snoozeUntil = Timestamp.fromDateTime(DateTime(2023, 11, 13, 6));
           }),
+        ),
+        CreateCommand(
           workTask1.rebuild((task) {
             task.clearId();
             task.timeChunksRequired = 2.hours;
@@ -308,6 +325,8 @@ void main() {
             task.due = Timestamp.fromDateTime(DateTime(2023, 11, 14, 21));
             task.snoozeUntil = Timestamp.fromDateTime(DateTime(2023, 11, 14, 6));
           }),
+        ),
+        EditCommand(
           workTask2.rebuild((task) {
             task.timeChunksRequired = 2.hours;
             task.timeChunksRemaining = 2.hours;
@@ -315,8 +334,8 @@ void main() {
             task.due = Timestamp.fromDateTime(DateTime(2023, 11, 14, 21));
             task.snoozeUntil = Timestamp.fromDateTime(DateTime(2023, 11, 14, 6));
           }),
-        ]));
-        expect(splitTasks.length, 1);
+        ),
+      ]));
     });
     test('Test tasks overflow in the next day', () {
       final task = Task()
@@ -367,59 +386,73 @@ void main() {
         ..freeze();
 
        final split = budgeter.splitByBudgets([task, placeholder, placeholder2, placeholder3]);
-       expect(split[0], unorderedEquals([
-          task.rebuild((task) {
-            task
-              ..snoozeUntil = Timestamp.fromDateTime(DateTime(2023, 11, 12, 6))
-              ..due = Timestamp.fromDateTime(DateTime(2023, 11, 12, 21))
-              ..timeChunksRequired = 3.hours + 1.halfHours
-              ..timeChunksRemaining = 3.hours + 1.halfHours;
-          }),
-          placeholder.rebuild((task) {
-            task
-              ..snoozeUntil = Timestamp.fromDateTime(DateTime(2023, 11, 12, 6))
-              ..due = Timestamp.fromDateTime(DateTime(2023, 11, 12, 21))
-              ..timeChunksRequired = 1.halfHours
-              ..timeChunksRemaining = 1.halfHours;
-          }),
-          placeholder.rebuild((task) {
-            task
-              ..clearId()
-              ..snoozeUntil = Timestamp.fromDateTime(DateTime(2023, 11, 13, 6))
-              ..due = Timestamp.fromDateTime(DateTime(2023, 11, 13, 21))
-              ..timeChunksRequired = 3.hours + 1.halfHours
-              ..timeChunksRemaining = 3.hours + 1.halfHours;
-          }),
-          placeholder2.rebuild((task) {
-            task
-              ..snoozeUntil = Timestamp.fromDateTime(DateTime(2023, 11, 13, 6))
-              ..due = Timestamp.fromDateTime(DateTime(2023, 11, 13, 21))
-              ..timeChunksRequired = 1.halfHours
-              ..timeChunksRemaining = 1.halfHours;
-          }),
-          placeholder2.rebuild((task) {
-            task
-              ..clearId()
-              ..snoozeUntil = Timestamp.fromDateTime(DateTime(2023, 11, 14, 6))
-              ..due = Timestamp.fromDateTime(DateTime(2023, 11, 14, 21))
-              ..timeChunksRequired = 3.hours + 1.halfHours
-              ..timeChunksRemaining = 3.hours + 1.halfHours;
-          }),
-          placeholder3.rebuild((task) {
-            task
-              ..snoozeUntil = Timestamp.fromDateTime(DateTime(2023, 11, 14, 6))
-              ..due = Timestamp.fromDateTime(DateTime(2023, 11, 14, 21))
-              ..timeChunksRequired = 1.halfHours
-              ..timeChunksRemaining = 1.halfHours;
-          }),
-          placeholder3.rebuild((task) {
-            task
-              ..clearId()
-              ..snoozeUntil = Timestamp.fromDateTime(DateTime(2023, 11, 15, 6))
-              ..due = Timestamp.fromDateTime(DateTime(2023, 11, 15, 21))
-              ..timeChunksRequired = 3.hours + 1.halfHours
-              ..timeChunksRemaining = 3.hours + 1.halfHours;
-          }),
+       expect(split, unorderedEquals([
+          EditCommand(
+            task.rebuild((task) {
+              task
+                ..snoozeUntil = Timestamp.fromDateTime(DateTime(2023, 11, 12, 6))
+                ..due = Timestamp.fromDateTime(DateTime(2023, 11, 12, 21))
+                ..timeChunksRequired = 3.hours + 1.halfHours
+                ..timeChunksRemaining = 3.hours + 1.halfHours;
+            }),
+          ),
+          EditCommand(
+            placeholder.rebuild((task) {
+              task
+                ..snoozeUntil = Timestamp.fromDateTime(DateTime(2023, 11, 12, 6))
+                ..due = Timestamp.fromDateTime(DateTime(2023, 11, 12, 21))
+                ..timeChunksRequired = 1.halfHours
+                ..timeChunksRemaining = 1.halfHours;
+            }),
+          ),
+          CreateCommand(
+            placeholder.rebuild((task) {
+              task
+                ..clearId()
+                ..snoozeUntil = Timestamp.fromDateTime(DateTime(2023, 11, 13, 6))
+                ..due = Timestamp.fromDateTime(DateTime(2023, 11, 13, 21))
+                ..timeChunksRequired = 3.hours + 1.halfHours
+                ..timeChunksRemaining = 3.hours + 1.halfHours;
+            }),
+          ),
+          EditCommand(
+            placeholder2.rebuild((task) {
+              task
+                ..snoozeUntil = Timestamp.fromDateTime(DateTime(2023, 11, 13, 6))
+                ..due = Timestamp.fromDateTime(DateTime(2023, 11, 13, 21))
+                ..timeChunksRequired = 1.halfHours
+                ..timeChunksRemaining = 1.halfHours;
+            }),
+          ),
+          CreateCommand(
+            placeholder2.rebuild((task) {
+              task
+                ..clearId()
+                ..snoozeUntil = Timestamp.fromDateTime(DateTime(2023, 11, 14, 6))
+                ..due = Timestamp.fromDateTime(DateTime(2023, 11, 14, 21))
+                ..timeChunksRequired = 3.hours + 1.halfHours
+                ..timeChunksRemaining = 3.hours + 1.halfHours;
+            }),
+          ),
+          EditCommand(
+            placeholder3.rebuild((task) {
+              task
+                ..snoozeUntil = Timestamp.fromDateTime(DateTime(2023, 11, 14, 6))
+                ..due = Timestamp.fromDateTime(DateTime(2023, 11, 14, 21))
+                ..timeChunksRequired = 1.halfHours
+                ..timeChunksRemaining = 1.halfHours;
+            }),
+          ),
+          CreateCommand(
+            placeholder3.rebuild((task) {
+              task
+                ..clearId()
+                ..snoozeUntil = Timestamp.fromDateTime(DateTime(2023, 11, 15, 6))
+                ..due = Timestamp.fromDateTime(DateTime(2023, 11, 15, 21))
+                ..timeChunksRequired = 3.hours + 1.halfHours
+                ..timeChunksRemaining = 3.hours + 1.halfHours;
+            }),
+          ),
         ]),
        );
     });
@@ -474,32 +507,37 @@ void main() {
       final tasks = [task];
       final splitTasks = budgeter.splitByBudgets(tasks);
 
-      expect(splitTasks[0], orderedEquals([
-        task.rebuild((task) {
-          task.timeChunksRequired = 4.hours;
-          task.timeChunksRemaining = 4.hours;
-          task.timeChunksSpent = 0.hours;
-          task.snoozeUntil = Timestamp.fromDateTime(DateTime(2023, 11, 10, 6));
-          task.due = Timestamp.fromDateTime(DateTime(2023, 11, 10, 21));
-        }),
-        task.rebuild((task) {
-          task.clearId();
-          task.timeChunksRequired = 4.hours;
-          task.timeChunksRemaining = 4.hours;
-          task.timeChunksSpent = 0.hours;
-          task.due = Timestamp.fromDateTime(DateTime(2023, 11, 12, 21));
-          task.snoozeUntil = Timestamp.fromDateTime(DateTime(2023, 11, 12, 6));
-        }),
-        task.rebuild((task) {
-          task.clearId();
-          task.timeChunksRequired = 2.hours;
-          task.timeChunksRemaining = 2.hours;
-          task.timeChunksSpent = 0.hours;
-          task.due = Timestamp.fromDateTime(DateTime(2023, 11, 13, 21));
-          task.snoozeUntil = Timestamp.fromDateTime(DateTime(2023, 11, 13, 6));
-        }),
+      expect(splitTasks, orderedEquals([
+        EditCommand(
+          task.rebuild((task) {
+            task
+              ..snoozeUntil = Timestamp.fromDateTime(DateTime(2023, 11, 10, 6))
+              ..due = Timestamp.fromDateTime(DateTime(2023, 11, 10, 21))
+              ..timeChunksRequired = 4.hours
+              ..timeChunksRemaining = 4.hours;
+          }),
+        ),
+        CreateCommand(
+          task.rebuild((task) {
+            task
+              ..clearId()
+              ..snoozeUntil = Timestamp.fromDateTime(DateTime(2023, 11, 12, 6))
+              ..due = Timestamp.fromDateTime(DateTime(2023, 11, 12, 21))
+              ..timeChunksRequired = 4.hours
+              ..timeChunksRemaining = 4.hours;
+          }),
+        ),
+        CreateCommand(
+          task.rebuild((task) {
+            task
+              ..clearId()
+              ..snoozeUntil = Timestamp.fromDateTime(DateTime(2023, 11, 13, 6))
+              ..due = Timestamp.fromDateTime(DateTime(2023, 11, 13, 21))
+              ..timeChunksRequired = 2.hours
+              ..timeChunksRemaining = 2.hours;
+          }),
+        ),
       ]));
-      expect(splitTasks.length, 1);
     });
   });
 

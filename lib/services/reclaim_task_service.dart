@@ -119,5 +119,30 @@ class ReclaimTaskService {
       throw 'Unexpected status code ${response.statusCode}';
     }
   }
+  Future<void> deleteTask(String taskId) async {
+    final url = Uri.https(
+      'api.app.reclaim.ai',
+      '/api/planner/policy/task/$taskId',
+    );
+
+    final headers = {
+      'Accept': 'application/json',
+      'Authorization': 'Bearer $token',
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': 'https://api.app.reclaim.ai',
+      'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    };
+
+    final response = await client.delete(
+      url,
+      headers: headers,
+    );
+
+    if (response.statusCode != 204 || response.statusCode != 200) {
+      throw 'Unexpected status code ${response.statusCode}';
+    }
+  }
+
 
 }
