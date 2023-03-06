@@ -137,7 +137,8 @@ class TimeBudgeter {
       tasks[i] = task;
       // if the task is in the budget
       // if (taskIsInTheBudget(task)) continue;
-      if (task.timeChunksRemaining <= config.budgetPerDayInChunks) {
+      final timeRemaining = config.budgetPerDayInChunks - currentDayUsedUpBudgetChunks;
+      if (task.timeChunksRemaining <= timeRemaining) {
         currentDayUsedUpBudgetChunks += task.timeChunksRemaining;
         continue;
       }
