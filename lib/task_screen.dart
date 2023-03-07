@@ -70,12 +70,17 @@ class _TaskScreenState extends State<TaskScreen> {
                   );
 
                   final commands = timeBudgeter.splitByBudgets(tasks);
+                  print(commands);
                   for (int i = 0; i < commands.length; i++) {
                     var command = commands[i];
                     await command.operation(service);
-                    if (commands[i - 1] is! DeleteCommand) {
+                    if (i > 0 && commands[i - 1] is! DeleteCommand) {
                       // we don't wanna move something after something that doesn't exist anymore
-                      await service.reindex(commands[i].task, "after", commands[i - 1].task.id);
+                      try {
+                        await service.reindex(commands[i].task, "after", commands[i - 1].task.id);
+                      } catch (e) {
+                        print(e);
+                      }
                     }
                   }
                   // for (final pouch in pouches) {
@@ -89,10 +94,6 @@ class _TaskScreenState extends State<TaskScreen> {
                   //     }
 
                   //     if (i > 0) {
-                  //       try {
-                        // } catch (e) {
-                          // print(e);
-                        // }
                       // }
                         // if pouch[i] isn't already after pouch[i - 1]
                     // }

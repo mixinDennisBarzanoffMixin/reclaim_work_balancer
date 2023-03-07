@@ -77,11 +77,11 @@ class TimeBudgeter {
     ];
   }
 
-  DateTime morningTime(DateTime date) {
+  static DateTime morningTime(DateTime date) {
     return DateTime(date.year, date.month, date.day, 6, 0, 0);
   }
 
-  DateTime eveningTime(DateTime date) {
+  static DateTime eveningTime(DateTime date) {
     return DateTime(date.year, date.month, date.day, 21, 0, 0);
   }
 

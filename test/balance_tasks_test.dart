@@ -10,6 +10,9 @@ import 'package:reclaim_work_balancer/util/time_conversion.dart';
 void main() {
   group('Test reclaim tasks balancer', () {
     late TimeBudgeter budgeter;
+    DateTime today = DateTime(2023, 11, 12);
+    DateTime tomorrow = today.add(const Duration(days: 1));
+    DateTime dayAfterTomorrow = today.add(const Duration(days: 2));
     
     setUp(() {
       budgeter = TimeBudgeter(
@@ -17,7 +20,7 @@ void main() {
           budgetMatcher: 
             [(Task task) => task.eventCategory == EventCategory.WORK], 
             budgetPerDayInChunks: 4.hours, 
-            startingDay: DateTime(2023, 11, 12), policy: TimePolicy(work: TimePolicy_DayHoursMap(dayHours: {
+            startingDay: today, policy: TimePolicy(work: TimePolicy_DayHoursMap(dayHours: {
               "MONDAY": TimePolicy_DayHours(intervals: [
                 TimePolicy_DayHours_Interval(start: "06:00:00", end: "21:00:00", duration: 21 - 6),
               ]),
@@ -595,6 +598,85 @@ void main() {
             }),
           ),
        ]));
+    });
+    test('Merges placeholders later down the line', () {
+      final normalTask = Task()
+        ..id = 123
+        ..title = 'SMBM-1234'
+        ..status = TaskStatus.NEW
+        ..snoozeUntil = Timestamp.fromDateTime(TimeBudgeter.morningTime(today))
+        ..due = Timestamp.fromDateTime(TimeBudgeter.eveningTime(today))
+        ..eventCategory = EventCategory.WORK
+        ..timeChunksRequired = 4.hours
+        ..timeChunksRemaining = 4.hours
+        ..timeChunksSpent = 0.hours
+        ..freeze();
+      final normalTask2 = Task()
+        ..id = 123
+        ..title = 'SMBM-1235'
+        ..status = TaskStatus.NEW
+        ..snoozeUntil = Timestamp.fromDateTime(TimeBudgeter.morningTime(today))
+        ..due = Timestamp.fromDateTime(TimeBudgeter.eveningTime(today))
+        ..eventCategory = EventCategory.WORK
+        ..timeChunksRequired = 1.hours + 1.halfHours
+        ..timeChunksRemaining = 1.hours + 1.halfHours
+        ..timeChunksSpent = 0.hours
+        ..freeze();
+      final placeholder = Task()
+        ..id = 124
+        ..title = 'Work placeholder'
+        ..status = TaskStatus.NEW
+        ..snoozeUntil = Timestamp.fromDateTime(TimeBudgeter.morningTime(tomorrow))
+        ..due = Timestamp.fromDateTime(TimeBudgeter.eveningTime(tomorrow))
+        ..eventCategory = EventCategory.WORK
+        ..timeChunksRequired = 1.halfHours
+        ..timeChunksRemaining = 1.halfHours
+        ..timeChunksSpent = 0.hours
+        ..freeze();
+      final placeholder2 = Task()
+        ..id = 125
+        ..title = 'Work placeholder'
+        ..status = TaskStatus.NEW
+        ..snoozeUntil = Timestamp.fromDateTime(TimeBudgeter.morningTime(dayAfterTomorrow))
+        ..due = Timestamp.fromDateTime(TimeBudgeter.eveningTime(dayAfterTomorrow))
+        ..eventCategory = EventCategory.WORK
+        ..timeChunksRequired = 1.hours + 1.halfHours
+        ..timeChunksRemaining = 1.hours + 1.halfHours
+        ..timeChunksSpent = 0.hours
+        ..freeze();
+      final split = budgeter.splitByBudgets([normalTask, normalTask2, placeholder, placeholder2]);
+      expect(split, orderedEquals([
+        DeleteCommand(placeholder2),
+        EditCommand(
+          normalTask.rebuild((task) {
+            task
+              ..snoozeUntil = Timestamp.fromDateTime(TimeBudgeter.morningTime(today))
+              ..due = Timestamp.fromDateTime(TimeBudgeter.eveningTime(today))
+              ..timeChunksRequired = 4.hours
+              ..timeChunksRemaining = 4.hours;
+          }),
+        ),
+        EditCommand(
+          normalTask2.rebuild(
+            (task) {
+              task
+                ..snoozeUntil = Timestamp.fromDateTime(TimeBudgeter.morningTime(tomorrow))
+                ..due = Timestamp.fromDateTime(TimeBudgeter.eveningTime(tomorrow))
+                ..timeChunksRequired = 1.hours + 1.halfHours
+                ..timeChunksRemaining = 1.hours + 1.halfHours;
+            },
+          ),
+        ),
+        EditCommand(
+          placeholder.rebuild((task) {
+            task
+              ..snoozeUntil = Timestamp.fromDateTime(TimeBudgeter.morningTime(tomorrow))
+              ..due = Timestamp.fromDateTime(TimeBudgeter.eveningTime(tomorrow))
+              ..timeChunksRequired = 2.hours
+              ..timeChunksRemaining = 2.hours;
+          }),
+        )
+      ]));
     });
   });
   group('Test no saturday behavior', () {
