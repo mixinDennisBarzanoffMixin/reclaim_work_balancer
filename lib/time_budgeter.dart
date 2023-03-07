@@ -114,6 +114,43 @@ class TimeBudgeter {
     final commands = <Command>[];
     final tasks = [...tasksToSort];
     var currentDate = config.startingDay;
+
+    bool isTaskToday(Task task) {
+      return !task.snoozeUntil.toDateTime().isAfter(currentDate);
+    }
+
+    // delete duplicate tasks
+    // group them by title
+    final groupedTasks = groupBy(tasks, (task) => task.title);
+    groupedTasks.forEach((key, value) {
+      if (value.length > 1) {
+        var firstTask = value[0];
+        // if there are more than one task with the same title, delete all but the first one
+        for (var i = 1; i < value.length; i++) {
+          final task = value[i];
+          // if the task is snoozed for the currentDay, don't delete it
+          if (isTaskToday(task)) {
+            // if task isn't after the starting day
+            // stop from deleting the task
+            continue;
+          }
+          commands.add(DeleteCommand(task));
+          firstTask = firstTask.rebuild((firstTask) {
+            firstTask.timeChunksRequired += task.timeChunksRequired;
+            firstTask.timeChunksRemaining += task.timeChunksRemaining;
+          });
+          // also we need to accumulate the time chunks required 
+          tasks.remove(task);
+        }
+        // replace the firstTask with the updated one in the task list
+        // find it by id because it has changed its data
+        final index = tasks.indexWhere((element) => element.id == firstTask.id);
+        tasks[index] = firstTask;
+      }
+    });
+
+
+
     // loop through the tasks in the budget
     var currentDayUsedUpBudgetChunks = 0;
     final weekDays = _weekDays(config.policy.work);
@@ -168,6 +205,18 @@ class TimeBudgeter {
     }
     return commands;
   }
+  Map<K, List<T>> groupBy<T, K>(Iterable<T> iterable, K Function(T) keySelector) {
+    final map = <K, List<T>>{};
+    for (final element in iterable) {
+      final key = keySelector(element);
+      if (!map.containsKey(key)) {
+        map[key] = <T>[];
+      }
+      map[key]!.add(element);
+    }
+    return map;
+  }
+
 
   // Task createPlaceholderTask(Timestamp date, int timeChunksRequired) {
   //   return Task(
