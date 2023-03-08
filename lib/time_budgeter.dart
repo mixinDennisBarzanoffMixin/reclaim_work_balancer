@@ -115,8 +115,8 @@ class TimeBudgeter {
     final tasks = [...tasksToSort];
     var currentDate = config.startingDay;
 
-    bool isTaskToday(Task task) {
-      return !task.snoozeUntil.toDateTime().isAfter(currentDate);
+    bool isTaskStarted(Task task) {
+      return task.timeChunksSpent != 0;
     }
 
     // delete duplicate tasks
@@ -129,7 +129,7 @@ class TimeBudgeter {
         for (var i = 1; i < value.length; i++) {
           final task = value[i];
           // if the task is snoozed for the currentDay, don't delete it
-          if (isTaskToday(task)) {
+          if (isTaskStarted(task)) {
             // if task isn't after the starting day
             // stop from deleting the task
             continue;
