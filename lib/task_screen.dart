@@ -64,7 +64,7 @@ class _TaskScreenState extends State<TaskScreen> {
                     BudgetConfig(
                       budgetMatcher: [(Task task) => task.eventCategory == EventCategory.WORK],
                       budgetPerDayInChunks: 4.hours,
-                      startingDay: DateTime.now(),
+                      startingDay: DateTime.now().add(Duration(days: 1)),
                       policy: policy,
                     ),
                   );

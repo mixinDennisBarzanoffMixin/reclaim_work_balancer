@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:protobuf/protobuf.dart';
 import 'package:reclaim_work_balancer/command.dart';
@@ -110,6 +108,23 @@ class TimeBudgeter {
   /// It iterates over all the tasks, determining if the budget is exceeded. If it is, it creates a placeholder task
   /// While iterating over the tasks, it calculates the remaining time left in the current day.
   /// If the task cannot be completed in the current day, it makes the task shorter, then duplicates the task into the next day as many times as necessary over and over until it is lower than the budget at some point.
+  /// 
+  /// commands to create, edit or delete tasks accordingly.
+  ///
+  /// The function first removes any duplicate tasks with the same title, keeping only the first task
+  /// and accumulating the time chunks required. It then loops through the tasks in the budget,
+  /// determining if each task can fit within the budget for each day. If the task can fit within the
+  /// budget, it is added to the list of commands to be executed. If the task exceeds the budget, it
+  /// is split into multiple tasks, with the first task added to the command list and the remaining
+  /// tasks inserted into the list for further processing.
+  ///
+  /// Parameters:
+  /// - [tasksToSort]: A list of tasks to be sorted.
+  /// - [config]: The budget configuration for the tasks.
+  ///
+  /// Returns:
+  /// A list of commands to create, edit or delete tasks, so that the tasks are updated to fit within
+  /// the given budget configuration.
   List<Command> updateTasksForBudget(List<Task> tasksToSort, BudgetConfig config) {
     final commands = <Command>[];
     final tasks = [...tasksToSort];
