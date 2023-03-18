@@ -60,8 +60,9 @@ class _TokenCheckPageState extends State<TokenCheckPage> {
     if (_token == null) {
       return Scaffold(
         appBar: AppBar(
-          title: Text('Enter Token'),
+          title: const Text('Enter Token'),
         ),
+        backgroundColor: const Color(0xFFF7F8FC),
         body: Center(
           child: Padding(
             padding: const EdgeInsets.all(8.0),
@@ -69,7 +70,7 @@ class _TokenCheckPageState extends State<TokenCheckPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 TextField(
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     hintText: 'Enter Token',
                   ),

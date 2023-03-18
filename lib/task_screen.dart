@@ -5,9 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:reclaim_work_balancer/services/reclaim_task_service.dart';
 import 'package:reclaim_work_balancer/time_budgeter.dart';
+import 'package:reclaim_work_balancer/util/colors.dart';
 import 'package:reclaim_work_balancer/util/time_conversion.dart';
+import 'package:reclaim_work_balancer/util/time_intervals.dart';
 
 import 'command.dart';
+import 'components/drag_handles.dart';
 import 'models/grpc/reclaim_task.pb.dart';
 import 'models/grpc/time_policy.pb.dart';
 import 'services/reclaim_user_service.dart';
@@ -26,23 +29,6 @@ class _TaskScreenState extends State<TaskScreen> {
   late ReclaimTaskService service;
   var tasks = <Task>[];
   late TimePolicyService timePolicyService;
-
-  @override
-  void initState() {
-    super.initState();
-    service = ReclaimTaskService(client, widget.token);
-    timePolicyService = TimePolicyService(client, widget.token);
-    timePolicyService.getCurrentUserTimePolicy().then((policty) {
-      print(policty);
-    });
-    refresh();
-  }
-  Future<void> refresh() async {
-    final value = await service.fetchAllTasks();
-    setState(() {
-      tasks = value;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -110,17 +96,51 @@ class _TaskScreenState extends State<TaskScreen> {
               );
             }
             return ReorderableListView(
+              buildDefaultDragHandles: false,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               children: tasks
-                  .map((item) => ListTile(
-                        key: ValueKey(item),
-                        title: Text(item.title),
-                        subtitle: Text(
-                          "${item.timeChunksRemaining / 4}h",
+                  .map((item) {
+                    print(item);
+                    return Padding(
+                      key: Key('${item.id}'),
+                      padding: const EdgeInsets.symmetric(vertical: 4.0),
+                      child: ListTile(
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4),side: BorderSide(color: Colors.black.withOpacity(0.075))),
+                          style: ListTileStyle.list,
+                          minVerticalPadding: 20,
+                          
+                          leading: SizedBox(
+                            height: double.infinity,
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              // ignore: sort_child_properties_last
+                              children: [
+                                ReorderableDragStartListener(
+                                  index: tasks.indexOf(item),
+                                  child: const Center(child: const ReclaimDragHandle()),
+                                ),
+                                Container(
+                                  width: 9,
+                                  height: 9,
+                                  margin: const EdgeInsets.symmetric(horizontal: 18),
+                                  decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: getColor(item),   
+                                )),
+                              ], 
+                              mainAxisSize: MainAxisSize.min,
+                            ),
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+                          key: ValueKey(item),
+                          title: Text(item.title),
+                          tileColor: Color(0xffFBFBFE),
+                          subtitle: Text(
+                            formatTimeChunks(item.timeChunksRemaining),
+                          ),
                         ),
-                        tileColor: item.eventCategory == EventCategory.WORK
-                            ? Colors.blue
-                            : Colors.orange,
-                      ))
+                    );
+                  })
                   .toList(),
               onReorder: (oldIndex, newIndex) {
                 setState(() {
@@ -141,5 +161,22 @@ class _TaskScreenState extends State<TaskScreen> {
         ),
       ),
     );
+  }
+  @override
+  void initState() {
+    super.initState();
+    service = ReclaimTaskService(client, widget.token);
+    timePolicyService = TimePolicyService(client, widget.token);
+    timePolicyService.getCurrentUserTimePolicy().then((policty) {
+      print(policty);
+    });
+    refresh();
+  }
+
+  Future<void> refresh() async {
+    final value = await service.fetchAllTasks();
+    setState(() {
+      tasks = value;
+    });
   }
 }
