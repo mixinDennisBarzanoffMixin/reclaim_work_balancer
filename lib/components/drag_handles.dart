@@ -19,7 +19,7 @@ class ReclaimDragHandle extends StatelessWidget {
             height: 1.3,
             decoration: const BoxDecoration(
               shape: BoxShape.circle,
-              color: Color(0xff757575),
+              color: Color(0x88757575),
             ),
           ),
       ]),
