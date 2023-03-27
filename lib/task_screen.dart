@@ -49,7 +49,7 @@ class _TaskScreenState extends State<TaskScreen> {
                   final timeBudgeter = TimeBudgeter(
                     BudgetConfig(
                       budgetMatcher: [(Task task) => task.eventCategory == EventCategory.WORK],
-                      budgetPerDayInChunks: 4.hours,
+                      budgetPerDayInChunks: 4.hours + 1.quarters,
                       startingDay: DateTime.now().add(Duration(days: 1)),
                       policy: policy,
                     ),
@@ -152,7 +152,11 @@ class _TaskScreenState extends State<TaskScreen> {
                   final direction = oldIndex < newIndex ? "after" : "before";
                   () async {
                     await service.reindex(oldTask, direction, newTask.id);
-                    await refresh();
+                    // swap the location of oldIndex and newIndex
+                    final temp = tasks[oldIndex];
+                    tasks[oldIndex] = tasks[newIndex];
+                    tasks[newIndex] = temp;
+                    // await refresh();
                   }();
                 });
               },
